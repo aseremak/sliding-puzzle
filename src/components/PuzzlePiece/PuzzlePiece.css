@@ -1,0 +1,8 @@
+.PuzzlePiece {
+    background-color: red;
+    width: 98px;
+    height: 98px;
+    position: absolute;
+    border: 1px solid black;
+    cursor: pointer;
+  }
