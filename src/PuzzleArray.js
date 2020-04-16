@@ -41,14 +41,16 @@ class PuzzleArray {
       return piecesInPlace / ((this.size**2) - 1);
     };    
 
-    shuffle() {
-      // SHUFFLES PUZZLE
-      let id = Math.ceil( Math.random()*((this.size**2 - 1)) );
-      this.movePiece(id);
-      // RECURSION UNTIL 15% PUZZLE WILL BE NOT IN CORRECT PLACE
-      if(this.disorderRatio() > 0.15) {
-        this.shuffle();
-      };
+    shuffle(count) {
+      // MOVES RANDOM PUZZLE AT LEAST count TIMES
+      // AND UNTIL 15% PUZZLE PIECES WILL BE NOT IN CORRECT PLACE
+      count = (count === undefined) ? 10000: count;
+      do {
+        for(let i=1; i<=count; i++){
+          let id = Math.ceil( Math.random()*((this.size**2 - 1)) );
+          this.movePiece(id);  
+        };
+      } while (this.disorderRatio() > 0.15);
     };
 
     findColumnAndRow = (id) => {
