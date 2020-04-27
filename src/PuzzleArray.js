@@ -1,8 +1,8 @@
 class PuzzleArray {
-    constructor(size) {
+    constructor(size, pieceWidth) {
       this.field = [];
       this.size = size;
-      this.pieceSize = 100;
+      this.pieceSize = pieceWidth;
       // ARRAY OF NUMBERS FROM 1 TO size*size-1
       // EX. size=3
       // [[null, null, null, null],
@@ -22,7 +22,12 @@ class PuzzleArray {
         };
         this.field.push(newRow);
       };
+      this.originalArray = [...this.field];
     } 
+
+    setPieceSize(newSize) {
+      this.pieceSize = newSize
+    }
 
     disorderRatio() {
       // RETURNS NUMBER OF PIECES ON ITS PLACES DIVIDED BY NUMBER OF PIECES
@@ -33,7 +38,7 @@ class PuzzleArray {
       for(let y=1; y<=this.size; y++){
         for(let x=1; x<=this.size; x++){
           if(id < this.size**2) {
-            const {column, row} = this.findColumnAndRow(id++);
+            const {column, row} = this.findColumnAndRow(this.field, id++);
             if (column===x && row===y) {
               piecesInPlace++              
       }}}}
@@ -53,18 +58,19 @@ class PuzzleArray {
       } while (this.disorderRatio() > 0.15);
     };
 
-    findColumnAndRow = (id) => {
-      // RETURNS {column, row} OF PIECE FOR GIVEN id.
+    findColumnAndRow = (arr, id) => {
+      
+      // RETURNS {column, row} OF PIECE FOR GIVEN id IN arr ARRAY.
       for(let y=1; y<=this.size; y++){
         for(let x=1; x<=this.size; x++){
-          if (this.field[y][x] === id) {
+          if (arr[y][x] === id) {
             return {column: x, row: y}
     }}}};  
   
-    calculatePosition = (id) => {
-      // RETURNS POSITION {top, left} OF PIECE FOR GIVEN id.
+    calculatePosition = (arr, id) => {
+      // RETURNS POSITION {top, left} OF PIECE FOR GIVEN id IN arr ARRAY.
       let top, left;
-      const {column, row} = this.findColumnAndRow(id);
+      const {column, row} = this.findColumnAndRow(arr, id);
       top = this.pieceSize * (row - 1);
       left = this.pieceSize * (column - 1);
       return {top: top, left: left};
@@ -72,18 +78,28 @@ class PuzzleArray {
   
     positionsArray() {
       // RETURNS ARRAY OF POSITIONS {top, left} FOR EACH PUZZLES
-      let arr = [null];
+      let result = [null];
       for(let i=1; i<this.size**2; i++){
-        arr.push(this.calculatePosition(i))
+        result.push(this.calculatePosition(this.field, i))
       }; 
     //   console.log(arr);
-      return arr;
+      return result;
+    };
+
+    originalPositionsArray() {
+      // RETURNS ARRAY OF POSITIONS {top, left} FOR EACH PUZZLES
+      let result = [null];
+      for(let i=1; i<this.size**2; i++){
+        result.push(this.calculatePosition(this.originalArray, i))
+      }; 
+    //   console.log(arr);
+      return result;
     };
 
     movePiece = (id) => {
       // MOVES PIECE FOR id TO EMPTY PLACE
       // RETURN FALSE IF MOVEMENT WAS IMPOSSIBLE
-      const {column, row} = this.findColumnAndRow(id),
+      const {column, row} = this.findColumnAndRow(this.field, id),
         field = [...this.field];
 
       // TRY MOVE RIGHT

@@ -1,52 +1,49 @@
 import React from 'react';
 import './App.css';
-import PuzzleArray from './PuzzleArray';
-import PuzzleBoard from './components/PuzzleBoard/PuzzleBoard';
-import puzzlePiece from './components/PuzzlePiece/PuzzlePiece';
-
-let SIZE = 3;
-let puzzleArr = new PuzzleArray(SIZE);
+// import PuzzleArray from './PuzzleArray';
+// import PuzzleBoard from './components/PuzzleBoard/PuzzleBoard';
+import GamePanel from './containers/GamePanel/GamePanel';
+// import puzzlePiece from './components/PuzzlePiece/PuzzlePiece';
+import Layout from './/containers/Layout/Layout';
 
 class App extends React.Component {
-  
-  state = {
-    positions: puzzleArr.positionsArray(),
-    pieceClicked: undefined
-  }
+	state = {
+		user: 'anonynous',
+		activePanel: 'game', // 'select-image' / 'user'
+		boardWidth: 240, // 240 / 360 / 420
+		gameType: {
+			size: 3,
+			withNumbers: true
+    },
+    gameStarted: false,
+		image: null
+	};
 
-  handlePieceClicked = (e) => {
-    const id = parseInt(e.target.id);
-    if (puzzleArr.movePiece(id)) {
-      this.setState({
-        positions: puzzleArr.positionsArray()
-      });
-      console.log(puzzleArr.disorderRatio());
-      if(puzzleArr.disorderRatio() === 1) {
-        for(let i=0; i<100; i++){
-          console.log('WYGRAŁEŚ');
-          console.log(' WYGRAŁEŚ');
-        };
-      }
-    };
-  };
-  
-  handleShuffle = () => {
-    puzzleArr.shuffle();
-    this.setState({
-      positions: puzzleArr.positionsArray()
-    });
-  };
+	updateWidth(val) {
+    // console.log(val);
+    let newVal;
+    if(val >= 950) {
+      newVal = 420
+    } else if (val >= 760) {
+      newVal = 360
+    } else {
+      newVal = 240
+    }
+		this.setState({ boardWidth: newVal });
+	}
 
-  render () {
+	render() {
+		const panel = <GamePanel settings={this.state} />;
 
-    return (
-      <div className="App">
-        <PuzzleBoard onPieceClicked={this.handlePieceClicked} positions={this.state.positions} />
-        <button onClick={this.handleShuffle}>SHUFFLE</button>
-      </div>
-    );
-  }
-  
+		return (
+			<div className="App">
+				<Layout widthRef={(val) => this.updateWidth(val)}>
+					{panel}
+					<p>{this.state.boardWidth}</p>
+				</Layout>
+			</div>
+		);
+	}
 }
 
 export default App;
