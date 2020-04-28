@@ -34,7 +34,7 @@ class Layout extends React.Component {
 				className="Layout"
 				ref={ (element) => {this.myElement = element} }
 			>
-				<h1>HEADER (component width={this.state.width})</h1>
+				<h1>HEADER (width={this.state.width})</h1>
 				{this.props.children}
 			</div>
 		);

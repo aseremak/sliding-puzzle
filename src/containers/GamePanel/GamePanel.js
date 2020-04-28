@@ -1,60 +1,72 @@
 import React from 'react';
 import PuzzleArray from '../../PuzzleArray';
 import PuzzleBoard from '../../components/PuzzleBoard/PuzzleBoard';
-// import puzzlePiece from './components/PuzzlePiece/PuzzlePiece';
 import Auxi from '../../hoc/Auxi/Auxi';
+import Timer from '../../components/Timer/Timer';
 
-// let SIZE = 3;
 let puzzleArr = [];
 
 class GamePanel extends React.Component {
 	constructor(props) {
 		super(props);
-    const size = this.props.settings.gameType.size;
-    const pieceWidth = this.props.settings.boardWidth / size;
+    const size = this.props.gameType.size;
+    const pieceWidth = this.props.boardWidth / size;
 		puzzleArr = new PuzzleArray(size, pieceWidth);
 
 		this.state = {
       positions: puzzleArr.positionsArray(),
       originalPositions: puzzleArr.originalPositionsArray(),
-			pieceClicked: undefined
+			pieceClicked: undefined,
+			timer: null
 		};
-		console.log(this.props.settings.boardWidth);
+		console.log('   constructor, timer: ' + this.timer);
+		this.timer = null;
   }
  
   componentDidUpdate(prevProps, prevState) {
-    
-    console.log(prevProps.settings.boardWidth, this.props.settings.boardWidth);
-    if (prevProps.settings.boardWidth !== this.props.settings.boardWidth) {
-      console.log('    COMPONENT DID UPDATE - CHANGE SIZE');
-      const size = this.props.settings.gameType.size;
-      console.log('    ----> size: ' + size);
-      
-      const pieceWidth = this.props.settings.boardWidth / size;      
-      puzzleArr.setPieceSize(pieceWidth);
+    console.log('componend did update');
+    console.log('- gameStarted? ' + this.props.gameStarted);
+    console.log('- boardWidth? ' + this.props.boardWidth);
+		
+    if (prevProps.boardWidth !== this.props.boardWidth) {
+			const size = this.props.gameType.size;
+      const pieceWidth = this.props.boardWidth / size;      
+			console.log('>>> componentDidUpdate 1st time or after resize - recalculate state.positions');
+			puzzleArr.setPieceSize(pieceWidth);
+			if (!this.props.gameStarted) {
+				console.log('SHUFFLED!!!!');
+				console.log('set original positions');
+				this.setState({
+					originalPositions: puzzleArr.originalPositionsArray()
+				});
+				this.handleShuffle();
+			};
       this.setState({
-          positions: puzzleArr.positionsArray(),
-          originalPositions: puzzleArr.originalPositionsArray(),
-          pieceClicked: undefined
+					positions: puzzleArr.positionsArray(),
+					originalPositions: puzzleArr.originalPositionsArray()
         })
       }
   }  
 
+
 	handlePieceClicked = (e) => {
-    // ex: e.target.id = 'puzzle_11'
+    // EXAMPLE e.target.id = 'puzzle_11'
 		const id = parseInt(e.target.id.substr(7));
 
 		console.log('handle piece clicked ' + id);
 		if (puzzleArr.movePiece(id)) {
+			if (!this.props.gameStarted) {
+				// STARTING THE GAME
+				this.startTimer();
+				this.props.gameStartedRef();
+			}
 			this.setState({
 				positions: puzzleArr.positionsArray()
 			});
 			console.log(puzzleArr.disorderRatio());
 			if (puzzleArr.disorderRatio() === 1) {
-				for (let i = 0; i < 100; i++) {
-					console.log('WYGRAŁEŚ');
-					console.log(' WYGRAŁEŚ');
-				}
+					this.stopTimer();
+					alert(`WYGRAŁES, twój czas to ${this.state.timer} sekund`);
 			}
 		}
 	};
@@ -68,18 +80,32 @@ class GamePanel extends React.Component {
 		});
 	};
 
+	addSecond() {
+		const newTimer = this.state.timer + 1;
+		this.setState({timer: newTimer})
+		console.log('          - tik -' + this.state.timer);
+	}
+
+	startTimer() {
+		this.setState({timer: 0});
+		this.timer = setInterval(this.addSecond.bind(this), 1000);
+	}
+
+	stopTimer() {
+		console.log('stop timer!');
+		
+		clearInterval(this.timer);
+
+	}
+
 	render() {
-		let info = null;
-		if (!this.props.settings.gameStarted) {
-
-
-			console.log('RENDER ' + this.props.settings.boardWidth);
-
-			info = <p>CZEKAMY NA KLIKNIECIE</p>;
+		let timer = null;
+		if (this.props.gameStarted) {
+			timer = <Timer timer={this.state.timer} />
 		}
 
-    const boardWidth = this.props.settings.boardWidth;
-    const pieceWidth = boardWidth / this.props.settings.gameType.size;
+    const boardWidth = this.props.boardWidth;
+    const pieceWidth = boardWidth / this.props.gameType.size;
 
 		return (
 			<Auxi>
@@ -89,11 +115,9 @@ class GamePanel extends React.Component {
           onPieceClicked={this.handlePieceClicked} 
           originalPositions={this.state.originalPositions}
           positions={this.state.positions} />
-				<br />
-				<p>{this.props.settings.boardWidth}</p>
-				{info}
-				<br />
+				{timer}
 				<button onClick={this.handleShuffle}>SHUFFLE</button>
+				<button onClick={this.stopTimer.bind(this)}>Wyzeruj timer</button>
 			</Auxi>
 		);
 	}

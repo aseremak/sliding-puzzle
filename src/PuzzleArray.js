@@ -1,15 +1,20 @@
 class PuzzleArray {
     constructor(size, pieceWidth) {
-      this.field = [];
+      console.log('CONSTRUCTOR');
+      
+      this.field = this.createArray(size);  // ARRAY OF NUMBERS FROM 1 TO size*size-1
+                                            // EX. size=3
+                                            // [[null, null, null, null],
+                                            //  [null, 1,    2,    3],
+                                            //  [null, 4,    5,    6],
+                                            //  [null, 7,    8,    null]]
+                                            // FIRST COLUMN AND ROW WON'T BE USED AT ALL     
       this.size = size;
       this.pieceSize = pieceWidth;
-      // ARRAY OF NUMBERS FROM 1 TO size*size-1
-      // EX. size=3
-      // [[null, null, null, null],
-      //  [null, 1,    2,    3],
-      //  [null, 4,    5,    6],
-      //  [null, 7,    8,    null]]
-      // FIRST COLUMN AND ROW WON'T BE USED AT ALL
+    };
+
+    createArray(size) {
+      const arr = [];
       let i = 0;
       for(let y=0; y<=size; y++){
         let newRow = []
@@ -20,10 +25,10 @@ class PuzzleArray {
             newRow.push(null);
           }
         };
-        this.field.push(newRow);
-      };
-      this.originalArray = [...this.field];
-    } 
+        arr.push(newRow);
+      }
+      return arr;
+    }
 
     setPieceSize(newSize) {
       this.pieceSize = newSize
@@ -55,7 +60,11 @@ class PuzzleArray {
           let id = Math.ceil( Math.random()*((this.size**2 - 1)) );
           this.movePiece(id);  
         };
-      } while (this.disorderRatio() > 0.15);
+      } while (this.disorderRatio() > 0.5); // 0.15);
+      console.log('this.field');
+      console.dir(this.field);
+      console.log('original Arraz');
+      console.dir(this.originalArray);
     };
 
     findColumnAndRow = (arr, id) => {
@@ -82,17 +91,16 @@ class PuzzleArray {
       for(let i=1; i<this.size**2; i++){
         result.push(this.calculatePosition(this.field, i))
       }; 
-    //   console.log(arr);
       return result;
     };
 
     originalPositionsArray() {
-      // RETURNS ARRAY OF POSITIONS {top, left} FOR EACH PUZZLES
+      // RETURNS ARRAY OF POSITIONS {top, left} FOR EACH PUZZLES IN CORRECT ORDER
+      const originalArray = this.createArray(this.size); // ARRAY IN STARTING ORDER
       let result = [null];
       for(let i=1; i<this.size**2; i++){
-        result.push(this.calculatePosition(this.originalArray, i))
+        result.push(this.calculatePosition(originalArray, i))
       }; 
-    //   console.log(arr);
       return result;
     };
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import PuzzlePiece from '../PuzzlePiece/PuzzlePiece';
+import PuzzlePiece from './PuzzlePiece/PuzzlePiece';
 import classes from './PuzzleBoard.module.css';
 
 class PuzzleBoard extends React.Component {
