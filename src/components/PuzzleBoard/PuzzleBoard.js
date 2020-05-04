@@ -20,6 +20,7 @@ class PuzzleBoard extends React.Component {
                     id={index}
                     width={this.props.pieceWidth}
                     boardWidth={this.props.width}
+                    withNumber={this.props.withNumbers}
                     onPieceClicked={this.props.onPieceClicked}
                     originalPosition={this.props.originalPositions[index]}
                     position={positions[index]}

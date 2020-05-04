@@ -1,0 +1,14 @@
+.GamesList ul {
+  list-style-type: none;
+}
+
+.GamesList ul li {
+  border: 1px solid red;
+  margin: 5px;
+  /* padding: 10px; */
+}
+
+.GamesList ul li:hover {
+  /* outline: 3px solid yellow; */
+  box-shadow: 1px 1px 15px red;
+}

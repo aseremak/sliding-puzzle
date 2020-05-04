@@ -1,0 +1,37 @@
+.GameInfo {
+	background-color: lightpink;
+	text-align: left;
+	padding: 2px;
+}
+
+.GameInfoName,
+.GameInfoUserBestScore,
+.GameInfoBestScore,
+.GameInfoAvgScore,
+.GameInfoStars {
+	display: inline-block;
+	text-align: center;
+	border: 1px solid green;
+	width: 25%;
+}
+
+.GameInfoName {
+	width: 100%;
+}
+
+.GameInfoSelected {
+  background-color: yellow;
+}
+
+@media (min-width: 600px) {
+	.GameInfoUserBestScore,
+	.GameInfoBestScore,
+	.GameInfoAvgScore,
+	.GameInfoStars {
+		width: 15%;
+	}
+
+	.GameInfoName {
+		width: 40%;
+	}
+}

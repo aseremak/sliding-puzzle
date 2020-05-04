@@ -21,7 +21,6 @@ const puzzlePiece = (props) => {
         top: props.position.top + 'px'
     }
 
-
     return (
         <div
             className="PuzzlePiece"
@@ -29,7 +28,7 @@ const puzzlePiece = (props) => {
             id={'puzzle_'+props.id}
             style={style}>
                 <img src={gif1x1} alt="Puzzle Piece" />
-                &nbsp;{props.id}
+                &nbsp;{props.withNumber ? props.id : null}
         </div>
     )
 }
