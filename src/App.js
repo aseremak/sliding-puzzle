@@ -19,13 +19,17 @@ class App extends React.Component {
 	updateWidth(val) {
     // console.log(val);
     let newVal;
-    if(val >= 950) {
-      newVal = 420
-    } else if (val >= 760) {
-      newVal = 360
-    } else {
-      newVal = 240
-    }
+    if(val >= 1000) {
+			newVal = 420
+    } else if (val >= 800) {
+			newVal = 360
+		} else if (val >= 600) {
+			newVal = 240
+		} else if (val >=400 ) {
+			newVal = 360
+		} else {
+			newVal = 240
+		}
 		this.setState({ boardWidth: newVal });
 	}
 

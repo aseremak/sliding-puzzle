@@ -1,16 +1,18 @@
+const DBG = false;
+
 class PuzzleArray {
     constructor(size, pieceWidth) {
-      console.log('CONSTRUCTOR');
-      
       this.field = this.createArray(size);  // ARRAY OF NUMBERS FROM 1 TO size*size-1
-                                            // EX. size=3
-                                            // [[null, null, null, null],
-                                            //  [null, 1,    2,    3],
-                                            //  [null, 4,    5,    6],
-                                            //  [null, 7,    8,    null]]
-                                            // FIRST COLUMN AND ROW WON'T BE USED AT ALL     
+      // EX. size=3
+      // [[null, null, null, null],
+      //  [null, 1,    2,    3],
+      //  [null, 4,    5,    6],
+      //  [null, 7,    8,    null]]
+      // FIRST COLUMN AND ROW WON'T BE USED AT ALL     
       this.size = size;
       this.pieceSize = pieceWidth;
+      this.DBG = DBG;
+      this.DBG && console.log('[PuzzleArray.constructor]');
     };
 
     createArray(size) {
@@ -61,10 +63,8 @@ class PuzzleArray {
           this.movePiece(id);  
         };
       } while (this.disorderRatio() > 0.5); // 0.15);
-      console.log('this.field');
-      console.dir(this.field);
-      console.log('original Arraz');
-      console.dir(this.originalArray);
+      // console.dir(this.field);
+      // console.dir(this.originalArray);
     };
 
     findColumnAndRow = (arr, id) => {

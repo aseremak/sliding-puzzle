@@ -1,6 +1,7 @@
 import React from 'react';
 import PuzzlePiece from './PuzzlePiece/PuzzlePiece';
 import classes from './PuzzleBoard.module.css';
+import image420 from '../../assets/images/420Koalas.jpg';
 
 class PuzzleBoard extends React.Component {
 
@@ -8,7 +9,7 @@ class PuzzleBoard extends React.Component {
 
         const styleSize = {
             width: this.props.width + 'px',
-            height: this.props.width + 'px'
+            height: this.props.width + 'px',
         }
 
         const positions = this.props.positions;
@@ -30,6 +31,7 @@ class PuzzleBoard extends React.Component {
 
         return (
             <div className={classes.PuzzleBoard} style={styleSize}>
+                <img src={image420} style={{width: this.props.width, height: this.props.width, opacity: '0.25'}} alt="background" />
                 {puzzlePieces}
             </div>
         )

@@ -3,11 +3,17 @@ import './Layout.css';
 // import Auxi from '../../hoc/Auxi/Auxi';
 
 class Layout extends React.Component {
-	state = { width: null };
+	constructor(props) {
+		super(props);
+		this.state = { width: null };
+		this.DBG = true;
+	}
 
 	updateWidth() {
-    // console.log('resize handler');
-		const curWidth = this.myElement.clientWidth;
+		// const curWidth = this.myElement.clientWidth;
+		const curWidth = this.myElement.parentNode.parentNode.parentNode.clientWidth; // BODY WIDTH
+		
+    this.DBG && console.log('[Laoyut.js updateWidth] clientWidth: ', curWidth);
 		if (this.state.width !== curWidth) {
 			this.setState({ width: curWidth });
       this.props.widthRef(curWidth);

@@ -3,6 +3,8 @@ import PuzzleArray from '../../PuzzleArray';
 import PuzzleBoard from '../../components/PuzzleBoard/PuzzleBoard';
 import Auxi from '../../hoc/Auxi/Auxi';
 import Timer from '../../components/Timer/Timer';
+import ImagePreview from '../../components/ImagePreview/ImagePreview';
+import './GamePanel.css';
 
 let puzzleArr = [];
 
@@ -12,35 +14,37 @@ class GamePanel extends React.Component {
     const size = this.props.gameType.size;
     const pieceWidth = this.props.boardWidth / size;
 		puzzleArr = new PuzzleArray(size, pieceWidth);
+		this.DBG = puzzleArr.DBG;
 
 		this.state = {
       positions: puzzleArr.positionsArray(),
       originalPositions: puzzleArr.originalPositionsArray(),
 			pieceClicked: undefined,
-			timer: null
+			timer: 0,
+			win: false
 		};
-		console.log('   constructor, timer: ' + this.timer);
+		this.DBG && console.log('[GamePanel.constructor] timer: ' + this.timer);
 		this.timer = null;
   }
  
   componentDidUpdate(prevProps, prevState) {
-    console.log('componend did update');
-    console.log('- gameStarted? ' + this.props.gameStarted);
-    console.log('- boardWidth? ' + this.props.boardWidth);
+    this.DBG && console.log('[GamePanel.componentDidUpdate]');
+    this.DBG && console.log('   - gameStarted? ' + this.props.gameStarted);
+    this.DBG && console.log('   - boardWidth? ' + this.props.boardWidth);
 		
     if (prevProps.boardWidth !== this.props.boardWidth) {
 			const size = this.props.gameType.size;
       const pieceWidth = this.props.boardWidth / size;      
-			console.log('>>> componentDidUpdate 1st time or after resize - recalculate state.positions');
+			this.DBG && console.log('[GamePanel.componentDidUpdate] 1st time or after resize - recalculate state.positions');
 			puzzleArr.setPieceSize(pieceWidth);
 			if (!this.props.gameStarted) {
-				console.log('SHUFFLED!!!!');
-				console.log('set original positions');
+				this.DBG && console.log('[GamePanel.componentDidUpdate] shuffled + set original positions'); 
 				this.setState({
 					originalPositions: puzzleArr.originalPositionsArray()
 				});
 				this.handleShuffle();
 			};
+			this.DBG && console.log('[GamePanel.componentDidUpdate] calculate positions array + set original positions'); 
       this.setState({
 					positions: puzzleArr.positionsArray(),
 					originalPositions: puzzleArr.originalPositionsArray()
@@ -53,7 +57,7 @@ class GamePanel extends React.Component {
     // EXAMPLE e.target.id = 'puzzle_11'
 		const id = parseInt(e.target.id.substr(7));
 
-		console.log('handle piece clicked ' + id);
+		this.DBG && this.DBG && console.log('[GamePanel.handlePieceClicked] handle piece clicked ' + id); 
 		if (puzzleArr.movePiece(id)) {
 			if (!this.props.gameStarted) {
 				// STARTING THE GAME
@@ -66,13 +70,13 @@ class GamePanel extends React.Component {
 			console.log(puzzleArr.disorderRatio());
 			if (puzzleArr.disorderRatio() === 1) {
 					this.stopTimer();
-					alert(`WYGRAŁES, twój czas to ${this.state.timer} sekund`);
+					this.setState({win: true});
 			}
 		}
 	};
 
 	handleShuffle = () => {
-		console.log('Handle shuffle');
+		this.DBG && console.log('[GamePanel.handleShuffle] Handle shuffle');
 
 		puzzleArr.shuffle();
 		this.setState({
@@ -83,7 +87,7 @@ class GamePanel extends React.Component {
 	addSecond() {
 		const newTimer = this.state.timer + 1;
 		this.setState({timer: newTimer})
-		console.log('          - tik -' + this.state.timer);
+		this.DBG && console.log('[GamePanel.addSecond]           - tik -' + this.state.timer);
 	}
 
 	startTimer() {
@@ -92,32 +96,31 @@ class GamePanel extends React.Component {
 	}
 
 	stopTimer() {
-		console.log('stop timer!');
-		
+		this.DBG && console.log('[GamePanel.stopTimer] stop timer!');
 		clearInterval(this.timer);
-
 	}
 
 	render() {
-		let timer = null;
-		if (this.props.gameStarted) {
-			timer = <Timer timer={this.state.timer} />
-		}
-
+		this.DBG && console.log('[GamePanel.render]');
     const boardWidth = this.props.boardWidth;
-    const pieceWidth = boardWidth / this.props.gameType.size;
+		const pieceWidth = boardWidth / this.props.gameType.size;
+		
+		const announceWin = this.state.win ? <h1>WYGRAŁEŚ!!!</h1> : null
 
 		return (
 			<Auxi>
+				<Timer timer={this.state.timer} />
+				<div className="BoardsContainer">
 				<PuzzleBoard
           width={boardWidth} 
           pieceWidth={pieceWidth}
           onPieceClicked={this.handlePieceClicked} 
           originalPositions={this.state.originalPositions}
           positions={this.state.positions} />
-				{timer}
+				<ImagePreview width={boardWidth} />
+				</div>
+				{announceWin}
 				<button onClick={this.handleShuffle}>SHUFFLE</button>
-				<button onClick={this.stopTimer.bind(this)}>Wyzeruj timer</button>
 			</Auxi>
 		);
 	}

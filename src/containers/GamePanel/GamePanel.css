@@ -1,0 +1,12 @@
+.BoardsContainer {
+  display: flex; 
+  flex-flow: column;
+  justify-content: center; 
+  /* align-content: space-between; */
+}
+
+@media (min-width: 600px) {
+  .BoardsContainer {
+    flex-flow: row;
+  }
+}
