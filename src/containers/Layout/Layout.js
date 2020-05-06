@@ -1,12 +1,16 @@
 import React from 'react';
 import './Layout.css';
-// import Auxi from '../../hoc/Auxi/Auxi';
+import LanguageSelector from '../../components/LanguageSelector/LanguageSelector';
+import LocalStorageWarning from '../../components/LocalStorageWarning/LocalStorageWarning';
 
 class Layout extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = { width: null };
-		this.DBG = true;
+		this.state = { 
+			width: null,
+			// lang: 'en'
+		};
+		this.DBG = false;
 	}
 
 	updateWidth() {
@@ -40,8 +44,12 @@ class Layout extends React.Component {
 				className="Layout"
 				ref={ (element) => {this.myElement = element} }
 			>
-				<h1>HEADER (width={this.state.width})</h1>
+				<div className="Header">
+					<div className="Username">{this.props.username}</div>
+					<LanguageSelector langSelect={this.props.langSelect} />
+				</div>
 				{this.props.children}
+				<LocalStorageWarning />
 			</div>
 		);
 	}

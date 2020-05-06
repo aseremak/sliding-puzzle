@@ -1,14 +1,25 @@
 .GamesList ul {
-  list-style-type: none;
+	list-style-type: none;
 }
 
 .GamesList ul li {
   border: 1px solid red;
-  margin: 5px;
-  /* padding: 10px; */
+  background-color: thistle;
+	margin: 5px;
+	cursor: pointer;
+	/* padding: 10px; */
 }
 
 .GamesList ul li:hover {
-  /* outline: 3px solid yellow; */
-  box-shadow: 1px 1px 15px red;
+	/* outline: 3px solid yellow; */
+	box-shadow: 1px 1px 15px red;
+}
+
+.GamesList ul li:first-child,
+.GamesList ul li:first-child:hover {
+	/* outline: 3px solid yellow; */
+  box-shadow: none;
+  cursor: auto;
+  font-weight: bold;
+  background-color: teal;
 }

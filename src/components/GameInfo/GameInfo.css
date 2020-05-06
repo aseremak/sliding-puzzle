@@ -1,22 +1,25 @@
 .GameInfo {
-	background-color: lightpink;
-	text-align: left;
+	background-color: transparent;
 	padding: 2px;
+	display: flex;
+	/* align-items: center; */
+  flex-wrap: wrap;
 }
 
 .GameInfoName,
-.GameInfoUserBestScore,
-.GameInfoBestScore,
-.GameInfoAvgScore,
+.GameInfoUserPB,
+.GameInfoHighscore,
+.GameInfoAvgPB,
 .GameInfoStars {
-	display: inline-block;
 	text-align: center;
-	border: 1px solid green;
+	border-left: 1px solid green;
 	width: 25%;
 }
 
 .GameInfoName {
 	width: 100%;
+	border-left: none;	
+	border-bottom: 1px solid green;
 }
 
 .GameInfoSelected {
@@ -24,14 +27,15 @@
 }
 
 @media (min-width: 600px) {
-	.GameInfoUserBestScore,
-	.GameInfoBestScore,
-	.GameInfoAvgScore,
+	.GameInfoUserPB,
+	.GameInfoHighscore,
+	.GameInfoAvgPB,
 	.GameInfoStars {
 		width: 15%;
 	}
 
 	.GameInfoName {
 		width: 40%;
+		border-bottom: none;
 	}
 }

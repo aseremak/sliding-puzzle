@@ -62,7 +62,7 @@ class PuzzleArray {
           let id = Math.ceil( Math.random()*((this.size**2 - 1)) );
           this.movePiece(id);  
         };
-      } while (this.disorderRatio() > 0.5); // 0.15);
+      } while (this.disorderRatio() > 0.9); // 0.15);
       // console.dir(this.field);
       // console.dir(this.originalArray);
     };

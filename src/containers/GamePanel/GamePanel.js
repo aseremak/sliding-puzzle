@@ -4,9 +4,16 @@ import PuzzleBoard from '../../components/PuzzleBoard/PuzzleBoard';
 import Auxi from '../../hoc/Auxi/Auxi';
 import Timer from '../../components/Timer/Timer';
 import ImagePreview from '../../components/ImagePreview/ImagePreview';
+import BestScores from '../../components/BestScores/BestScores';
+import YouWin from '../../components/YouWin/YouWin';
 import './GamePanel.css';
+import localization from '../../localization';
+import LangContext from '../../hoc/context/LangContext';
+
 
 let puzzleArr = [];
+
+const txt = new localization();
 
 class GamePanel extends React.Component {
 	constructor(props) {
@@ -14,7 +21,7 @@ class GamePanel extends React.Component {
 
 		this.DBG = true;
 
-		const size = this.props.gameType.size;
+		const size = this.props.game.size;
 		const pieceWidth = this.props.boardWidth / size;
 		puzzleArr = new PuzzleArray(size, pieceWidth);
 
@@ -23,17 +30,22 @@ class GamePanel extends React.Component {
 			originalPositions: puzzleArr.originalPositionsArray(),
 			pieceClicked: undefined,
 			timer: 0,
-			win: false
+			win: false,
+			newPersonalBest: false,
+			newHighscore: false,
 		};
+
 		this.DBG && console.log('[GamePanel.constructor] timer: ' + this.timer);
 		this.timer = null;
 	}
+
+  static contextType = LangContext;
 
 	componentDidMount() {
 		this.DBG && console.log('[GamePanel.componentDidMount]');
 		this.DBG && console.log('   - boardWidth? ' + this.props.boardWidth);
 
-		const size = this.props.gameType.size;
+		const size = this.props.game.size;
 		const pieceWidth = this.props.boardWidth / size;
 		puzzleArr.setPieceSize(pieceWidth);
 		this.setState({
@@ -58,7 +70,7 @@ class GamePanel extends React.Component {
 		this.DBG && console.log('   - boardWidth? ' + this.props.boardWidth);
 
 		if (prevProps.boardWidth !== this.props.boardWidth) {
-			const size = this.props.gameType.size;
+			const size = this.props.game.size;
 			const pieceWidth = this.props.boardWidth / size;
 			puzzleArr.setPieceSize(pieceWidth);
 			// this.DBG &&
@@ -87,11 +99,32 @@ class GamePanel extends React.Component {
 				positions: puzzleArr.positionsArray()
 			});
 			console.log(puzzleArr.disorderRatio());
-			if (puzzleArr.disorderRatio() === 1) {
+			if (puzzleArr.disorderRatio() >= 0.6) { // === 1
 				this.stopTimer();
+				this.checkNewPersonalBestOrHighscore(this.state.timer);
 				this.setState({ win: true });
 			}
 		}
+	};
+
+	checkNewPersonalBestOrHighscore = (time) => {
+		console.log('highscore:' + this.props.bestScores.highscore + '  personalBest:' + this.props.bestScores.personalBest);
+		const highscore = this.props.bestScores.highscore || Infinity;
+		const personalBest = this.props.bestScores.personalBest || Infinity;
+		console.log('highscore2:' + highscore + '  personalBest2:' + personalBest);
+		if (time < highscore) {
+			this.setState({newHighscore: true})
+		};
+		if (time < personalBest) {
+			this.setState({newPersonalBest: true})
+			this.props.callUserBrokePersonalBest(this.props.game.type, time);
+		};
+	}
+
+	handleResign = () => {
+		this.DBG && console.log('[GamePanel.handleResign]');
+		this.stopTimer();
+		this.props.endGameRef();
 	};
 
 	addSecond() {
@@ -113,26 +146,36 @@ class GamePanel extends React.Component {
 	render() {
 		this.DBG && console.log('[GamePanel.render]');
 		const boardWidth = this.props.boardWidth;
-		const pieceWidth = boardWidth / this.props.gameType.size;
+		const pieceWidth = boardWidth / this.props.game.size;
 
-		const announceWin = this.state.win ? <h1>WYGRAŁEŚ!!!</h1> : null;
+		const youWin = this.state.win ? 
+			<YouWin 
+				time={this.state.timer}
+				storage={this.props.storage}
+				anonymous={this.props.anonymous}
+				newPersonalBest={this.state.newPersonalBest}
+				newHighscore={this.state.newHighscore}
+				clickOkButton={this.props.endGameRef} /> 
+			: null;
 
 		return (
 			<Auxi>
+				<BestScores bestScores={this.props.bestScores} />
 				<Timer timer={this.state.timer} />
 				<div className="BoardsContainer">
 					<PuzzleBoard
 						width={boardWidth}
 						pieceWidth={pieceWidth}
-						withNumbers={this.props.gameType.withNumbers}
+						withNumbers={this.props.game.withNumbers}
 						onPieceClicked={this.handlePieceClicked}
 						originalPositions={this.state.originalPositions}
 						positions={this.state.positions}
 					/>
 					<ImagePreview width={boardWidth} />
 				</div>
-				{announceWin}
-				<button onClick={this.handleShuffle}>SHUFFLE</button>
+				{youWin}
+				<button onClick={this.handleShuffle}>{txt.SHUFFLE_AGAIN[this.context.lang]}</button>
+				<button onClick={this.handleResign}>{txt.RESIGN[this.context.lang]}</button>
 			</Auxi>
 		);
 	}
