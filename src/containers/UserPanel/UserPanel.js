@@ -60,14 +60,15 @@ class UserPanel extends React.Component {
 		return (
 			<Auxi>
         <div className="GamesList">
-          <p>{txt.SELECT_GAME_AND_CLICK_PLAY[this.context.lang]}</p>
+          <br/><p>{txt.SELECT_GAME_AND_CLICK_PLAY[this.context.lang]}</p><br/>
           <ul>
             <li key="game_list_header">
               <GameInfo 
-                gameLabel="game" 
-                personalBest="personal best" 
-                averagePB="avg. personal best" 
-                highscore="high score"/>
+                header={true}
+                gameLabel="Game Type" 
+                personalBest="Personal Best" 
+                averagePB="Avg. Personal Best" 
+                highscore="High Score"/>
             </li>
             {allGames}
           </ul>

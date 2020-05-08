@@ -8,7 +8,7 @@
 
 .GamesList ul li {
   color: #000;
-  background-color: transparent;
+  background-color: white;
   border: 1px solid #ccc;
 	box-shadow: 2px 2px 5px 0px #777;
 	margin: 10px;
@@ -16,19 +16,6 @@
 	/* padding: 10px; */
 }
 
-
-
-.GamesList ul li:first-child {
-	/* outline: 3px solid yellow; */
-  cursor: auto;
-  font-weight: bold;
-  background-color: #ddd;
-}
-
-.GamesList ul li:hover {
+.GamesList ul li:not(:first-child):hover {
 	box-shadow: 2px 2px 15px 0px red;
-}
-
-.GamesList ul li:first-child:hover {
-	box-shadow: 2px 2px 5px 0px #777;
 }

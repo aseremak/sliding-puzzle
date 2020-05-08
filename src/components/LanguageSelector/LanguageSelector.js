@@ -22,7 +22,14 @@ const LanguageSelector = (props) => {
 			)
 	});
 
-	return <Dropdown caption={currentLang}>{list}</Dropdown>;
+	return (
+		<Dropdown 
+			expanded={props.expanded}
+			clickCall={props.clickCall}
+			caption={currentLang}>
+			{list}
+		</Dropdown>
+		)
 };
 
 export default LanguageSelector;
