@@ -88,7 +88,7 @@ class GamePanel extends React.Component {
 		// EXAMPLE e.target.id = 'puzzle_11'
 		const id = parseInt(e.target.id.substr(7));
 
-		this.DBG && this.DBG && console.log('[GamePanel.handlePieceClicked] handle piece clicked ' + id);
+		this.DBG && console.log('[GamePanel.handlePieceClicked] handle piece clicked ' + id);
 		if (puzzleArr.movePiece(id)) {
 			if (!this.props.gameStarted) {
 				// STARTING THE GAME
@@ -98,8 +98,8 @@ class GamePanel extends React.Component {
 			this.setState({
 				positions: puzzleArr.positionsArray()
 			});
-			console.log(puzzleArr.disorderRatio());
-			if (puzzleArr.disorderRatio() >= 0.6) { // === 1
+			this.DBG && console.log(puzzleArr.disorderRatio());
+			if (puzzleArr.disorderRatio() === 1) { // >= 0.6
 				this.stopTimer();
 				this.checkNewPersonalBestOrHighscore(this.state.timer);
 				this.setState({ win: true });
@@ -108,10 +108,12 @@ class GamePanel extends React.Component {
 	};
 
 	checkNewPersonalBestOrHighscore = (time) => {
-		console.log('highscore:' + this.props.bestScores.highscore + '  personalBest:' + this.props.bestScores.personalBest);
+		this.DBG && console.log('[GamePanel.js] checkNewPersonalBestOrHighscore');
+		
+		this.DBG && console.log('highscore:' + this.props.bestScores.highscore + '  personalBest:' + this.props.bestScores.personalBest);
 		const highscore = this.props.bestScores.highscore || Infinity;
 		const personalBest = this.props.bestScores.personalBest || Infinity;
-		console.log('highscore2:' + highscore + '  personalBest2:' + personalBest);
+		this.DBG && console.log('highscore2:' + highscore + '  personalBest2:' + personalBest);
 		if (time < highscore) {
 			this.setState({newHighscore: true})
 		};

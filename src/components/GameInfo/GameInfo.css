@@ -2,8 +2,8 @@
 	background-color: transparent;
 	padding: 2px;
 	display: flex;
-	/* align-items: center; */
-  flex-wrap: wrap;
+	align-items: center;
+	flex-wrap: wrap;
 }
 
 .GameInfoName,
@@ -12,18 +12,18 @@
 .GameInfoAvgPB,
 .GameInfoStars {
 	text-align: center;
-	border-left: 1px solid green;
+	border-left: 1px solid #ccc;
 	width: 25%;
 }
 
 .GameInfoName {
 	width: 100%;
 	border-left: none;	
-	border-bottom: 1px solid green;
+	border-bottom: 1px solid #ccc;
 }
 
 .GameInfoSelected {
-  background-color: yellow;
+  background-color: #ffa3a3;
 }
 
 @media (min-width: 600px) {

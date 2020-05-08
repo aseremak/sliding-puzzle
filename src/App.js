@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.css';
+import axios from 'axios';
 import GamePanel from './containers/GamePanel/GamePanel';
 import UserPanel from './containers/UserPanel/UserPanel';
 import Layout from './containers/Layout/Layout';
@@ -33,35 +34,64 @@ class App extends React.Component {
 	componentDidMount() {
 		console.log('[App.js] componentDidMount');
 		this.getDataFromLocalStorage();
+		this.getDataFromServer();
 	}
 
 	getDataFromLocalStorage() {
 		console.log('[App.js] getDataFromLocalStorage');
-		//   localStorage.setItem('3x3', 135);
-		//   console.log(localStorage.getItem('3x3'));
-		let personalBests = {};
-		if (!this.state.storage) {
-			console.log('Web Storage Disabled, no data');
-		} else {
-			for (const key in localStorage) {
+		const 
+			user = {...this.state.user},
+			personalBests = {};
+		let storageEnable = undefined;
+		try {
+			let storage = localStorage;
+			storageEnable = true;
+			for (const key in storage) {
 				if (key) {
 					personalBests[key] = localStorage[key];
 				}
 			}
-		};
-		const user = {...this.state.user};
+		} catch (error) {
+			console.log('Web Storage Disabled, no data');
+			alert('Web Storege Disabled!')
+			storageEnable = false;
+		}
 		user.personalBests = personalBests;
-		this.setState({user: user})
+		this.setState({
+			user: user,
+			storage: storageEnable
+		})
 		console.log(user);
 	}
 
+	getDataFromServer() {
+		console.log('[App.js] getDataFromServer');
+		axios.get('https://slide-puzzle-as.firebaseio.com/highscores.json')
+			.then( (res) => {
+				console.log('[App.js] then');
+				if(res.data) {
+					this.setState({highscores: res.data});
+				} else {
+					alert('unable to load highscores...')
+					this.setState({highscores: {}});
+				}
+			})
+			.catch( (error) => {
+				console.log('[App.js] error');
+				console.log(error)
+			})
+	}
+
 	userBrokePersonalBest = (gameType, time) => {
-		console.log('argumetns:', gameType, time);
+		console.log('[App.js] userBrokePersonalBest - args:', gameType, time);
 		
 		const user = {...this.state.user};
 		user.personalBests[gameType] = time;
 		this.setState({ user: user})
-		localStorage.setItem(gameType, time);
+		if(this.state.storage) {
+			localStorage.setItem(gameType, time);
+		};
+		// ADD CODE TO SEND PERSONAL BEST TO SERVER
 		console.log('[App.js] personal best saved in localStorage.', user);
 	}
 
@@ -140,12 +170,13 @@ class App extends React.Component {
 
 			default:
 				// USERPANEL
-				if (this.state.user.personalBests) {
+				if ((this.state.user.personalBests || !this.state.storage) && this.state.highscores) {
 					panel = (
 						<UserPanel
 							availableGames={this.state.availableGames}
 							clickPlay={this.userClickedPlayButtonHandler}
 							user={this.state.user}
+							highscores={this.state.highscores}
 						/>
 					);
 				} else {
@@ -160,6 +191,8 @@ class App extends React.Component {
 					<Layout
 						langSelect={this.langSelectHandler}
 						username={this.state.user.username}
+						storage={this.state.storage}
+						anonymous={this.state.user.username === 'anonymous'}
 						widthRef={(val) => this.updateWidth(val)}
 					>
 						{panel}

@@ -49,7 +49,10 @@ class Layout extends React.Component {
 					<LanguageSelector langSelect={this.props.langSelect} />
 				</div>
 				{this.props.children}
-				<LocalStorageWarning />
+				<LocalStorageWarning 
+					storage={this.props.storage}
+					anonymous={this.props.anonymous}
+				/>
 			</div>
 		);
 	}

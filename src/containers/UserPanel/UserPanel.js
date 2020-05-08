@@ -2,6 +2,8 @@ import React from 'react';
 import Auxi from '../../hoc/Auxi/Auxi';
 import './UserPanel.css';
 import GameInfo from '../../components/GameInfo/GameInfo';
+import Button from '../../components/UI/Button/Button';
+
 import localization from '../../localization';
 import LangContext from '../../hoc/context/LangContext';
 
@@ -13,7 +15,6 @@ class UserPanel extends React.Component {
     this.DBG = true;
 
     this.DBG && console.log('[UserPanel.js] constructor');
-    console.log(this.props.user);
 
     this.state = {
       selectedGame: null,
@@ -48,7 +49,7 @@ class UserPanel extends React.Component {
           <GameInfo 
             gameLabel={gameLabel} 
             personalBest={this.props.user.personalBests[game]} 
-            highscore={'-'}
+            highscore={this.props.highscores[game]}
             selected={selected}/>
         </li>
       )
@@ -71,11 +72,11 @@ class UserPanel extends React.Component {
             {allGames}
           </ul>
         </div> 
-        <button 
+        <Button 
           disabled={buttonPlayDisable}
-          onClick={() => this.props.clickPlay(this.state.selectedGame)}
+          callClick={() => this.props.clickPlay(this.state.selectedGame)}
         >{txt.PLAY[this.context.lang]}
-        </button>
+        </Button>
 			</Auxi>
 		);
 	}
