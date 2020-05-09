@@ -1,8 +1,16 @@
 .YouWin {
-  position: fixed;
-  top: 20%;
-  left: 10%;
-  width: 80%;
+  line-height: 1.4em;
   padding: 10px;
-  background-color: white;
+}
+
+.YouWin h2{
+  border: 1px solid #ccc;
+	box-shadow: 2px 2px 5px 0px #777;  
+  padding: 10px;
+  text-align: center;
+}
+
+.YouWin span{
+  font-weight: bold;
+  font-size: 1.2em;
 }

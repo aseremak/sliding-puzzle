@@ -161,7 +161,6 @@ class App extends React.Component {
 						storage={this.state.storage}
 						anonymous={this.state.user.username === 'anonymous'}
 						gameStartedRef={() => this.gameStartedHandler()}
-						// gameResignClick={() => this.GameHandler()}
 						endGameRef={() => this.GameHandler()}
 						callUserBrokePersonalBest={(type, time) => this.userBrokePersonalBest(type, time)}
 					/>

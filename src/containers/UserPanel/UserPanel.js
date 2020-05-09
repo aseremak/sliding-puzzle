@@ -78,6 +78,11 @@ class UserPanel extends React.Component {
           callClick={() => this.props.clickPlay(this.state.selectedGame)}
         >{txt.PLAY[this.context.lang]}
         </Button>
+        <Button 
+          disabled={true}
+          callClick={() => this.props.clickPlay(this.state.selectedGame)}
+        >High Scores
+        </Button>        
 			</Auxi>
 		);
 	}

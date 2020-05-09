@@ -6,9 +6,12 @@ import Timer from '../../components/Timer/Timer';
 import ImagePreview from '../../components/ImagePreview/ImagePreview';
 import BestScores from '../../components/BestScores/BestScores';
 import YouWin from '../../components/YouWin/YouWin';
+import Button from '../../components/UI/Button/Button';
 import './GamePanel.css';
 import localization from '../../localization';
 import LangContext from '../../hoc/context/LangContext';
+
+import Modal from '../../components/UI/Modal/Modal';
 
 
 let puzzleArr = [];
@@ -151,6 +154,7 @@ class GamePanel extends React.Component {
 		const pieceWidth = boardWidth / this.props.game.size;
 
 		const youWin = this.state.win ? 
+			<Modal clickCall={this.props.endGameRef}>
 			<YouWin 
 				time={this.state.timer}
 				storage={this.props.storage}
@@ -158,6 +162,7 @@ class GamePanel extends React.Component {
 				newPersonalBest={this.state.newPersonalBest}
 				newHighscore={this.state.newHighscore}
 				clickOkButton={this.props.endGameRef} /> 
+			</Modal>
 			: null;
 
 		return (
@@ -176,8 +181,10 @@ class GamePanel extends React.Component {
 					<ImagePreview width={boardWidth} />
 				</div>
 				{youWin}
-				<button onClick={this.handleShuffle}>{txt.SHUFFLE_AGAIN[this.context.lang]}</button>
-				<button onClick={this.handleResign}>{txt.RESIGN[this.context.lang]}</button>
+        <Button callClick={this.handleShuffle}>{txt.SHUFFLE_AGAIN[this.context.lang]}</Button>	        
+				<Button callClick={this.handleResign}>{txt.RESIGN[this.context.lang]}</Button>				
+				{/* <button onClick={this.handleShuffle}>{txt.SHUFFLE_AGAIN[this.context.lang]}</button> */}
+				{/* <button onClick={this.handleResign}>{txt.RESIGN[this.context.lang]}</button> */}
 			</Auxi>
 		);
 	}

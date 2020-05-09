@@ -11,6 +11,7 @@ class Layout extends React.Component {
 			width: null,
 			langSelectorExpanded: false,
 			showModal: false,
+			// modalChildren: null,
 			// lang: 'en'
 		};
 		this.DBG = false;
@@ -60,7 +61,7 @@ class Layout extends React.Component {
 	render() {
 		let modal=false;
 		if (this.state.showModal) {
-			modal=<Modal clickCall={() => this.onClickHandler()}/>
+			modal=<Modal clickCall={() => this.onClickHandler()}></Modal>
 		}
 		return (
 			<div

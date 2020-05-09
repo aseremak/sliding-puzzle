@@ -7,3 +7,9 @@
   position: fixed;
   z-index: 100;
 }
+
+.vertCenterDiv {
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+}

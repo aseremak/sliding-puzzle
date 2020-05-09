@@ -1,5 +1,6 @@
 import React from 'react';
 import './YouWin.css';
+import Button from '../../components/UI/Button/Button';
 
 const youWin = (props) => {
   console.log('[YouWin.js] anonymous, storage:', props.anonymous, props.storage);
@@ -23,7 +24,7 @@ const youWin = (props) => {
   };
   if (props.newHighscore) {
     if (props.anonymous) {
-      info.push(<p key="p3">Your score is better than High Score but it won't be saved (because you're not logged in)</p>)
+      info.push(<p key="p3">Your score is better than High Score!<br/>(but it won't be saved because you're not logged in)</p>)
     } else {
       info.push(<p key="p4">You've just set a New High Score!!!</p>)
     }
@@ -31,10 +32,14 @@ const youWin = (props) => {
 
   return (
     <div className="YouWin">
-      <h2>CONGRATULATIONS!</h2>
-      <p>Your time: {props.time} </p>
-      {info}
-      <button onClick={props.clickOkButton}>OK</button>
+      <h2>CONGRATULATIONS!</h2><br/>
+      <p>Your time: <span>{props.time}</span></p>
+      {info}<br/>
+      <Button 
+          callClick={props.clickOkButton}
+        >OK
+      </Button>	 
+      {/* <button onClick={props.clickOkButton}>OK</button> */}
     </div>
   )
 };

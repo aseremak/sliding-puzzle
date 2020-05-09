@@ -1,3 +1,28 @@
-.BestScores {
-  background-color: thistle;
+/* .BestScores {
+  background-color: #fff;
+  border: 1px solid #ccc;
+	box-shadow: 2px 2px 5px 0px #777;
+	font-size: 1.0em;
+  padding: 2px 0;
+  margin: 10px 0 0;
 }
+
+.BestScoreItem {
+  display: inline-block;
+  width: 50%;
+} */
+
+.BestScores {
+  width: 50%;
+}
+
+.BestScoreItem {
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #ccc;
+	box-shadow: 2px 2px 5px 0px #777;
+	font-size: 1.0em;
+  padding: 2px 0;
+  margin: 10px 0 0;  
+}
+
