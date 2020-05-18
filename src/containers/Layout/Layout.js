@@ -17,7 +17,7 @@ class Layout extends React.Component {
 		this.DBG = false;
 	}
 
-	updateWidth() {
+	updateWidth = () => {
 		// const curWidth = this.myElement.clientWidth;
 		const curWidth = this.myElement.parentNode.parentNode.parentNode.clientWidth; // BODY WIDTH
 		
@@ -34,12 +34,12 @@ class Layout extends React.Component {
       // console.log('state.width = ' + this.state.width);
     };
 		// console.log('componentDidMount');
-		window.addEventListener('resize', () => this.updateWidth());
+		window.addEventListener('resize', this.updateWidth());
 	}
 
 	componentWillUnmount() {
 		// console.log('ComponentWillUnmount');
-		window.removeEventListener('resize', () => this.updateWidth());
+		window.removeEventListener('resize', this.updateWidth());
 	}
 
 	langSelectorClickHandler = () => {
@@ -61,13 +61,13 @@ class Layout extends React.Component {
 	render() {
 		let modal=false;
 		if (this.state.showModal) {
-			modal=<Modal clickCall={() => this.onClickHandler()}></Modal>
+			modal=<Modal clickCall={this.onClickHandler}></Modal>
 		}
 		return (
 			<div
 				className="Layout"
 				ref={ (element) => {this.myElement = element} }
-				onClick={ () => {this.onClickHandler()}}
+				onClick={this.onClickHandler}
 			>
 				<div className="Header">
 					<div className="Username">{this.props.username}</div>

@@ -160,8 +160,10 @@ class App extends React.Component {
 						bestScores={bestScores}
 						storage={this.state.storage}
 						anonymous={this.state.user.username === 'anonymous'}
-						gameStartedRef={() => this.gameStartedHandler()}
-						endGameRef={() => this.GameHandler()}
+						// gameStartedRef={() => this.gameStartedHandler()}
+						gameStartedRef={this.gameStartedHandler}
+						// endGameRef={() => this.GameHandler()}
+						endGameRef={this.GameHandler}
 						callUserBrokePersonalBest={(type, time) => this.userBrokePersonalBest(type, time)}
 					/>
 				);

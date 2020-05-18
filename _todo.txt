@@ -1,9 +1,5 @@
 context API langSelector - https://stackoverflow.com/questions/54357274/dynamically-swap-css-in-react
 
-pogrupować komponenty na game panel i user panel
-
-ujednolicić zapis referencji event-handlerów
-
 dodać Redux
 
 uwierzytelnianie / authentication

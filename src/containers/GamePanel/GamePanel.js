@@ -132,18 +132,18 @@ class GamePanel extends React.Component {
 		this.props.endGameRef();
 	};
 
-	addSecond() {
+	addSecond = () => {
 		const newTimer = this.state.timer + 1;
 		this.setState({ timer: newTimer });
 		this.DBG && console.log('[GamePanel.addSecond]           - tik -' + this.state.timer);
 	}
 
-	startTimer() {
+	startTimer = () => {
 		this.setState({ timer: 0 });
 		this.timer = setInterval(this.addSecond.bind(this), 1000);
 	}
 
-	stopTimer() {
+	stopTimer = () => {
 		this.DBG && console.log('[GamePanel.stopTimer] stop timer!');
 		clearInterval(this.timer);
 	}
