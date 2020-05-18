@@ -4,7 +4,7 @@ import axios from 'axios';
 import GamePanel from './containers/GamePanel/GamePanel';
 import UserPanel from './containers/UserPanel/UserPanel';
 import Layout from './containers/Layout/Layout';
-import Spinner from './components/Spinner/Spinner';
+import Spinner from './components/UI/Spinner/Spinner';
 
 import LangContext from './hoc/context/LangContext';
 

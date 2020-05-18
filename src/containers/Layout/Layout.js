@@ -1,7 +1,7 @@
 import React from 'react';
 import './Layout.css';
 import LanguageSelector from '../../components/LanguageSelector/LanguageSelector';
-import LocalStorageWarning from '../../components/LocalStorageWarning/LocalStorageWarning';
+import LocalStorageWarning from '../../components/Layout/LocalStorageWarning/LocalStorageWarning';
 import Modal from '../../components/UI/Modal/Modal';
 
 class Layout extends React.Component {

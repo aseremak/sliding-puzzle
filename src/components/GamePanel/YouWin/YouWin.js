@@ -1,6 +1,6 @@
 import React from 'react';
 import './YouWin.css';
-import Button from '../../components/UI/Button/Button';
+import Button from '../../UI/Button/Button';
 
 const youWin = (props) => {
   console.log('[YouWin.js] anonymous, storage:', props.anonymous, props.storage);

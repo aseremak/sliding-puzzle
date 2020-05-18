@@ -1,11 +1,11 @@
 import React from 'react';
 import PuzzleArray from '../../PuzzleArray';
-import PuzzleBoard from '../../components/PuzzleBoard/PuzzleBoard';
+import PuzzleBoard from '../../components/GamePanel/PuzzleBoard/PuzzleBoard';
 import Auxi from '../../hoc/Auxi/Auxi';
-import Timer from '../../components/Timer/Timer';
+import Timer from '../../components/GamePanel/Timer/Timer';
 import ImagePreview from '../../components/ImagePreview/ImagePreview';
-import BestScores from '../../components/BestScores/BestScores';
-import YouWin from '../../components/YouWin/YouWin';
+import BestScores from '../../components/GamePanel/BestScores/BestScores';
+import YouWin from '../../components/GamePanel/YouWin/YouWin';
 import Button from '../../components/UI/Button/Button';
 import './GamePanel.css';
 import localization from '../../localization';

@@ -1,9 +1,9 @@
 import React from 'react';
 import './PuzzlePiece.css'
-import gif1x1 from '../../../assets/images/1x1.gif';
-import image240 from '../../../assets/images/240Koalas.jpg';
-import image360 from '../../../assets/images/360Koalas.jpg';
-import image420 from '../../../assets/images/420Koalas.jpg';
+import gif1x1 from '../../../../assets/images/1x1.gif';
+import image240 from '../../../../assets/images/240Koalas.jpg';
+import image360 from '../../../../assets/images/360Koalas.jpg';
+import image420 from '../../../../assets/images/420Koalas.jpg';
 
 const puzzlePiece = (props) => {
 

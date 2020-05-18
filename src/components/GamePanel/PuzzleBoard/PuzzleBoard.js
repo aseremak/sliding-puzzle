@@ -1,7 +1,7 @@
 import React from 'react';
 import PuzzlePiece from './PuzzlePiece/PuzzlePiece';
 import classes from './PuzzleBoard.module.css';
-import image420 from '../../assets/images/420Koalas.jpg';
+import image420 from '../../../assets/images/420Koalas.jpg';
 
 class PuzzleBoard extends React.Component {
 

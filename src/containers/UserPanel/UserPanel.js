@@ -1,7 +1,7 @@
 import React from 'react';
 import Auxi from '../../hoc/Auxi/Auxi';
 import './UserPanel.css';
-import GameInfo from '../../components/GameInfo/GameInfo';
+import GameInfo from '../../components/UserPanel/GameInfo/GameInfo';
 import Button from '../../components/UI/Button/Button';
 
 import localization from '../../localization';
