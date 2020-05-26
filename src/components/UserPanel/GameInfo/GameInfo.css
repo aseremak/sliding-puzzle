@@ -1,5 +1,5 @@
 .GameInfo {
-	background-color: white;
+	background-color: inherit;
 	padding: 2px;
 	display: flex;
 	align-items: stretch;
@@ -11,7 +11,7 @@
 	cursor: auto;
 	font-weight: bold;
 	font-size: 0.8em;
-	background-color: #ddd;
+	background-color: inherit;
 }
 
 .GameInfoHeader .GameInfoName {
@@ -43,12 +43,6 @@
 
 .GameInfoSelected {
 	background-color: #ffa3a3;
-}
-
-.vertCenterDiv {
-	position: relative;
-	top: 50%;
-	transform: translateY(-50%);
 }
 
 @media (min-width: 600px) {

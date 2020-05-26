@@ -1,16 +1,14 @@
 .Button {
   font-size: 1em;
   color: #000;
-  background-color: transparent;
-  border: 1px solid #ccc;
-  box-shadow: 2px 2px 5px 0px #777;
   padding: 10px;
   margin: 10px 10px 0;
-  min-width: 200px;
+  width: 70%;
+  max-width: 250px;
   cursor: pointer;
 }
 
-.Button:hover {
+.Button:hover:not(:disabled) {
   box-shadow: 2px 2px 15px 0px red;
   /* background-color: #fcefef; */
   /* font-weight: bold; */
@@ -20,8 +18,7 @@
 
 .Button:disabled {
   color: #aaa;
-  background-color: #eee;
-  box-shadow: 2px 2px 5px 0px #777;
   text-shadow: none;
+  cursor: default;
 }
 

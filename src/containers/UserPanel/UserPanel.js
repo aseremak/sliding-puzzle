@@ -43,6 +43,7 @@ class UserPanel extends React.Component {
       const gameLabel = game.endsWith('+') ? game.slice(0, game.length - 1) + txt.WITH_NUMBERS[this.context.lang] : game;
       return (
         <li 
+          className="stdBlock" 
           key={game} 
           onClick={() => this.listClickedHandler(game)}
         >
@@ -62,7 +63,7 @@ class UserPanel extends React.Component {
         <div className="GamesList">
           <br/><p>{txt.SELECT_GAME_AND_CLICK_PLAY[this.context.lang]}</p><br/>
           <ul>
-            <li key="game_list_header">
+            <li className="stdBlockStrong" key="game_list_header">
               <GameInfo 
                 header={true}
                 gameLabel="Game Type" 

@@ -1,11 +1,14 @@
 import React from 'react';
-import './App.css';
 import axios from 'axios';
+import { connect } from 'react-redux';
+
+import './App.css';
+import * as actions from './store/actions';
+
 import GamePanel from './containers/GamePanel/GamePanel';
 import UserPanel from './containers/UserPanel/UserPanel';
 import Layout from './containers/Layout/Layout';
 import Spinner from './components/UI/Spinner/Spinner';
-
 import LangContext from './hoc/context/LangContext';
 
 class App extends React.Component {
@@ -28,12 +31,17 @@ class App extends React.Component {
 		gameStarted: false,
 		image: null,
 		lang: 'en',
-		storage: typeof Storage ? true : false // CHECK IF THIS IS NEEDED
+		// storage: typeof Storage ? true : false // CHECK IF THIS IS NEEDED
 	};
 
 	componentDidMount() {
 		console.log('[App.js] componentDidMount');
+		// this.props.checkIfStorageIsEnabled()
+		// if (this.props.isStorageEnabled) {
+		// 	this.getDataFromLocalStorage();
+		// }; 
 		this.getDataFromLocalStorage();
+
 		this.getDataFromServer();
 	}
 
@@ -52,8 +60,6 @@ class App extends React.Component {
 				}
 			}
 		} catch (error) {
-			console.log('Web Storage Disabled, no data');
-			alert('Web Storege Disabled!')
 			storageEnable = false;
 		}
 		user.personalBests = personalBests;
@@ -70,7 +76,9 @@ class App extends React.Component {
 			.then( (res) => {
 				console.log('[App.js] then');
 				if(res.data) {
+					console.log(res.data);
 					this.setState({highscores: res.data});
+					
 				} else {
 					alert('unable to load highscores...')
 					this.setState({highscores: {}});
@@ -141,6 +149,9 @@ class App extends React.Component {
 	}
 
 	render() {
+
+		const auth = null; //<Auth />;
+
 		let panel = null;
 		switch (this.state.activePanel) {
 			case 'game':
@@ -172,6 +183,7 @@ class App extends React.Component {
 			default:
 				// USERPANEL
 				if ((this.state.user.personalBests || !this.state.storage) && this.state.highscores) {
+					// if ((this.state.user.personalBests || !this.state.storage) && this.state.highscores) {
 					panel = (
 						<UserPanel
 							availableGames={this.state.availableGames}
@@ -191,12 +203,13 @@ class App extends React.Component {
 				<LangContext.Provider value={{ lang: this.state.lang }}>
 					<Layout
 						langSelect={this.langSelectHandler}
-						username={this.state.user.username}
+						// username={this.state.user.username}
 						storage={this.state.storage}
-						anonymous={this.state.user.username === 'anonymous'}
+						// anonymous={this.state.user.username === 'anonymous'}
 						widthRef={(val) => this.updateWidth(val)}
 					>
 						{panel}
+						{auth}
 					</Layout>
 				</LangContext.Provider>
 			</div>
@@ -204,4 +217,16 @@ class App extends React.Component {
 	}
 }
 
-export default App;
+const mapStateToProps = state => {
+	return {
+		storageEnabled: state.isStorageEnabled,
+	}
+}
+
+const mapDispatchToProps = dispatch => {
+	return {
+		checkIfStorageIsEnabled: () => dispatch(actions.check_storage_enabled()),
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

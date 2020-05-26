@@ -4,7 +4,7 @@ import './Button.css';
 const button = (props) => {
   return (
     <button
-      className="Button"
+      className="Button stdBlock"
       disabled={props.disabled}
       onClick={props.callClick}
     >

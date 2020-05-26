@@ -3,3 +3,10 @@ context API langSelector - https://stackoverflow.com/questions/54357274/dynamica
 dodać Redux
 
 uwierzytelnianie / authentication
+
+auth - check if user.username already exists
+
+auth - catching and handling errors
+
+anonymous user - ooptin to clear personalBest in HighScores
+

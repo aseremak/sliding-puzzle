@@ -1,8 +1,7 @@
 import React, { useContext } from 'react';
-import './LanguageSelector.css';
-import Dropdown from '../UI/Dropdown/Dropdown';
-import localization from '../../localization';
-import LangContext from '../../hoc/context/LangContext';
+import Dropdown from '../../UI/Dropdown/Dropdown';
+import localization from '../../../localization';
+import LangContext from '../../../hoc/context/LangContext';
 
 const txt = new localization();
 

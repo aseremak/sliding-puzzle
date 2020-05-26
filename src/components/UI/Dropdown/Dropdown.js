@@ -3,31 +3,28 @@ import './Dropdown.css';
 
 class Dropdown extends React.Component {
 
-	// state={
-	// 	showList: false
-	// }
-
-	render () {
-		let style = 'Dropdown-content';
+	render() {
+		let style = 'Dropdown-content stdBlock';
 		if (this.props.expanded) {
 			style += ' Dropdown-content-show';
-		};
-		// if(this.state.showList) {
-		// 	style += ' Dropdown-content-show';
-		// }
+		}
+
+		const iconOrCaption = this.props.image ? <img src={this.props.image} alt={this.props.caption} /> : this.props.caption;
 
 		return (
 			<div className="Dropdown">
-				<div 
+				<div
 					className="Dropdown-button"
-					onClick={ (e) => {this.props.clickCall(); e.stopPropagation()}}
-					>{ this.props.caption }</div>
-				<ul className={style}>
-					{this.props.children}
-				</ul>
+					onClick={(e) => {
+						this.props.clickCall();
+						e.stopPropagation();
+					}}>
+					{iconOrCaption}
+				</div>
+				<ul className={style}>{this.props.children}</ul>
 			</div>
 		);
 	}
-};
+}
 
 export default Dropdown;

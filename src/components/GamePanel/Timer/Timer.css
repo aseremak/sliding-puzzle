@@ -2,15 +2,16 @@
   display: block;
   width: 15%;
   min-width: 80px;
+  font-size: 1.4em;
+  color: black;
   padding: 5px 0;
+  
+  /* font-weight: bold; */
+  
   margin: 10px auto 0; 
 
-
-  background-color: white;
+  /* background-color: white;
   border: 1px solid #ccc;
-  color: black;
-  font-size: 1.4em;
-  /* font-weight: bold; */
-	box-shadow: 2px 2px 5px 0px #777;
+	box-shadow: 2px 2px 5px 0px #777; */
  
 }

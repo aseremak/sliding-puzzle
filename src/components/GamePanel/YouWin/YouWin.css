@@ -3,9 +3,7 @@
   padding: 10px;
 }
 
-.YouWin h2{
-  border: 1px solid #ccc;
-	box-shadow: 2px 2px 5px 0px #777;  
+.YouWin h2 { 
   padding: 10px;
   text-align: center;
 }

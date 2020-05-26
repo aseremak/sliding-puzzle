@@ -1,9 +1,8 @@
 import React from 'react';
-// import './BestScoreItem.css';
 
 const bestScoreItem = (props) => {
   return (
-    <div className="BestScoreItem">
+    <div className="BestScoreItem stdBlock">
       {props.caption}: {props.value}
     </div>
   )

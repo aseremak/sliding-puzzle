@@ -32,7 +32,7 @@ const youWin = (props) => {
 
   return (
     <div className="YouWin">
-      <h2>CONGRATULATIONS!</h2><br/>
+      <h2 className="stdBlockStrong">CONGRATULATIONS!</h2><br/>
       <p>Your time: <span>{props.time}</span></p>
       {info}<br/>
       <Button 

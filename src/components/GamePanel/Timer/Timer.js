@@ -3,7 +3,7 @@ import './Timer.css';
 
 const timer = (props) => {
   return (
-    <div className="Timer">{props.timer}</div>
+    <div className="Timer stdBlock">{props.timer}</div>
   )
 };
 
