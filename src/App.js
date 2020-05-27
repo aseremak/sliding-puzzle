@@ -1,5 +1,4 @@
 import React from 'react';
-import axios from 'axios';
 import { connect } from 'react-redux';
 
 import './App.css';
@@ -14,11 +13,6 @@ import LangContext from './hoc/context/LangContext';
 class App extends React.Component {
 	state = {
 		availableGames: [ '3x3', '4x4', '5x5' ],
-		user: {
-			username: 'anonymous',
-			email: null,
-			personalBests: undefined
-		},
 		activePanel: 'user', // 'select-image' / 'user' / 'game'
 		boardWidth: null, // 240 / 360 / 420
 		game: {
@@ -27,81 +21,60 @@ class App extends React.Component {
 			withNumbers: true,
 			highscore: 999 // 123, // THIS VALUE EXIST IN highscores TOO, MAY IT SHOULD BE MOVED FROM HERE
 		},
-		highscores: undefined,
 		gameStarted: false,
 		image: null,
 		lang: 'en',
-		// storage: typeof Storage ? true : false // CHECK IF THIS IS NEEDED
+		isStorageEnabled: undefined
 	};
 
 	componentDidMount() {
-		console.log('[App.js] componentDidMount');
-		// this.props.checkIfStorageIsEnabled()
-		// if (this.props.isStorageEnabled) {
-		// 	this.getDataFromLocalStorage();
-		// }; 
+		console.log('[App.js] componentDidMount, isStorageEnabled enabled? ');
 		this.getDataFromLocalStorage();
-
-		this.getDataFromServer();
+		this.props.getHighscores();
 	}
 
 	getDataFromLocalStorage() {
+		// CHECK IF storageEnabled AND SET user.personalBests
 		console.log('[App.js] getDataFromLocalStorage');
-		const 
-			user = {...this.state.user},
-			personalBests = {};
-		let storageEnable = undefined;
+		let personalBests = {};
+		let storageEnabled = undefined;
 		try {
-			let storage = localStorage;
-			storageEnable = true;
-			for (const key in storage) {
-				if (key) {
-					personalBests[key] = localStorage[key];
-				}
+			const scores = localStorage.getItem('slidePuzzleScores');
+			storageEnabled = true;
+			if (scores) {
+				personalBests = JSON.parse(scores);
 			}
 		} catch (error) {
-			storageEnable = false;
+			storageEnabled = false;
 		}
-		user.personalBests = personalBests;
+		this.props.setPersonalBests(personalBests);
 		this.setState({
-			user: user,
-			storage: storageEnable
-		})
-		console.log(user);
-	}
-
-	getDataFromServer() {
-		console.log('[App.js] getDataFromServer');
-		axios.get('https://slide-puzzle-as.firebaseio.com/highscores.json')
-			.then( (res) => {
-				console.log('[App.js] then');
-				if(res.data) {
-					console.log(res.data);
-					this.setState({highscores: res.data});
-					
-				} else {
-					alert('unable to load highscores...')
-					this.setState({highscores: {}});
-				}
-			})
-			.catch( (error) => {
-				console.log('[App.js] error');
-				console.log(error)
-			})
+			isStorageEnabled: storageEnabled
+		});
 	}
 
 	userBrokePersonalBest = (gameType, time) => {
 		console.log('[App.js] userBrokePersonalBest - args:', gameType, time);
-		
-		const user = {...this.state.user};
-		user.personalBests[gameType] = time;
-		this.setState({ user: user})
-		if(this.state.storage) {
-			localStorage.setItem(gameType, time);
-		};
-		// ADD CODE TO SEND PERSONAL BEST TO SERVER
-		console.log('[App.js] personal best saved in localStorage.', user);
-	}
+		if (this.props.user.anonymous) {
+			// UPDATE LOCAL STORAGE SCORES
+			if (this.state.isStorageEnabled) {
+				let scores = localStorage.getItem('slidePuzzleScores');
+				let updatedScores = {};
+				if (scores) {
+					updatedScores = JSON.parse(scores);
+					console.log(updatedScores);
+					updatedScores[gameType] = time;
+				} else {
+					updatedScores = {
+						[gameType]: time
+					};
+				}
+				localStorage.setItem('slidePuzzleScores', JSON.stringify(updatedScores));
+				console.log('[App.js] personal best saved in localStorage.');
+			}
+		}
+		this.props.newPersonalBest(gameType, time);
+	};
 
 	updateWidth(val) {
 		// console.log(val);
@@ -136,31 +109,24 @@ class App extends React.Component {
 	};
 
 	GameHandler = () => {
-		// GameHandler() {
 		console.log('[App.js] GameHandler');
 		this.setState({
 			activePanel: 'user',
 			gameStarted: false
 		});
-	}
+	};
 
 	gameStartedHandler = () => {
 		this.setState({ gameStarted: true });
-	}
+	};
 
 	render() {
-
-		const auth = null; //<Auth />;
-
-		let panel = null;
+		let panel = <Spinner />;
 		switch (this.state.activePanel) {
 			case 'game':
 				const bestScores = {
 					highscore: this.state.game.highscore,
-					personalBest: this.state.user.personalBests[this.state.game.type]
-					// personalBest: this.state.user.personalBests
-					// 	? this.state.user.personalBests[this.state.game.type]
-					// 	: null
+					personalBest: this.props.user.personalBests[this.state.game.type]
 				};
 				panel = (
 					<GamePanel
@@ -169,8 +135,8 @@ class App extends React.Component {
 						gameStarted={this.state.gameStarted}
 						image={this.state.image}
 						bestScores={bestScores}
-						storage={this.state.storage}
-						anonymous={this.state.user.username === 'anonymous'}
+						storage={this.state.isStorageEnabled}
+						anonymous={this.props.user.anonymous}
 						// gameStartedRef={() => this.gameStartedHandler()}
 						gameStartedRef={this.gameStartedHandler}
 						// endGameRef={() => this.GameHandler()}
@@ -182,18 +148,15 @@ class App extends React.Component {
 
 			default:
 				// USERPANEL
-				if ((this.state.user.personalBests || !this.state.storage) && this.state.highscores) {
-					// if ((this.state.user.personalBests || !this.state.storage) && this.state.highscores) {
+				if ((this.props.user.personalBests || !this.state.isStorageEnabled) && this.props.highscores) {
 					panel = (
 						<UserPanel
 							availableGames={this.state.availableGames}
 							clickPlay={this.userClickedPlayButtonHandler}
-							user={this.state.user}
-							highscores={this.state.highscores}
+							user={this.props.user}
+							highscores={this.props.highscores}
 						/>
 					);
-				} else {
-					panel = <Spinner />;
 				}
 				break;
 		}
@@ -203,13 +166,9 @@ class App extends React.Component {
 				<LangContext.Provider value={{ lang: this.state.lang }}>
 					<Layout
 						langSelect={this.langSelectHandler}
-						// username={this.state.user.username}
-						storage={this.state.storage}
-						// anonymous={this.state.user.username === 'anonymous'}
-						widthRef={(val) => this.updateWidth(val)}
-					>
+						storage={this.state.isStorageEnabled}
+						widthRef={(val) => this.updateWidth(val)}>
 						{panel}
-						{auth}
 					</Layout>
 				</LangContext.Provider>
 			</div>
@@ -217,16 +176,19 @@ class App extends React.Component {
 	}
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
 	return {
-		storageEnabled: state.isStorageEnabled,
-	}
-}
+		user: state.user,
+		highscores: state.highscores,
+	};
+};
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
 	return {
-		checkIfStorageIsEnabled: () => dispatch(actions.check_storage_enabled()),
-	}
-}
+		getHighscores: () => dispatch(actions.highscores_get()),
+		setPersonalBests: (personalBest) => dispatch(actions.user_set_personal_bests(personalBest)),
+		newPersonalBest: (gameType, time) => dispatch(actions.user_new_personal_best(gameType, time))
+	};
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

@@ -36,6 +36,7 @@ class GamePanel extends React.Component {
 			win: false,
 			newPersonalBest: false,
 			newHighscore: false,
+			bestScores: {}
 		};
 
 		this.DBG && console.log('[GamePanel.constructor] timer: ' + this.timer);
@@ -45,6 +46,10 @@ class GamePanel extends React.Component {
   static contextType = LangContext;
 
 	componentDidMount() {
+		this.setState({bestScores: this.props.bestScores}); // save initial props.bestScores 
+		// in order to push them as constant values to BestScores component and not update them when
+		// user beats bestScore or personalBest and this.props.bestScores will change
+		
 		this.DBG && console.log('[GamePanel.componentDidMount]');
 		this.DBG && console.log('   - boardWidth? ' + this.props.boardWidth);
 
@@ -167,7 +172,7 @@ class GamePanel extends React.Component {
 
 		return (
 			<Auxi>
-				<BestScores bestScores={this.props.bestScores} />
+				<BestScores bestScores={this.state.bestScores} />
 				<Timer timer={this.state.timer} />
 				<div className="BoardsContainer">
 					<PuzzleBoard
@@ -183,6 +188,7 @@ class GamePanel extends React.Component {
 				{youWin}
         <Button callClick={this.handleShuffle}>{txt.SHUFFLE_AGAIN[this.context.lang]}</Button>	        
 				<Button callClick={this.handleResign}>{txt.RESIGN[this.context.lang]}</Button>				
+				<Button callClick={() => this.props.callUserBrokePersonalBest(this.props.game.type, 77)}>New PersonalBest!</Button>				
 				{/* <button onClick={this.handleShuffle}>{txt.SHUFFLE_AGAIN[this.context.lang]}</button> */}
 				{/* <button onClick={this.handleResign}>{txt.RESIGN[this.context.lang]}</button> */}
 			</Auxi>

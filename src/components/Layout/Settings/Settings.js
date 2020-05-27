@@ -11,7 +11,7 @@ const settings = (props) => {
 			<li onClick={props.showChangeUsernameDialog}>Change User Name</li>
 			</>
 		) 
-		: <li>Clear Personal Bests</li>
+		: <li onClick={props.showClearPersonalBestsDialog}>Clear Personal Bests</li>
 
 	return (
 		<Dropdown 

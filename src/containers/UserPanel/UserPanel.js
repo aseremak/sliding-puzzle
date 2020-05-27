@@ -19,15 +19,7 @@ class UserPanel extends React.Component {
     this.state = {
       selectedGame: null,
     }
-
-    // this.readStorageData();
   }
-
-  // readStorageData() {
-  //   this.DBG && console.log('[UserPanel.js] readStorageData');
-  //   localStorage.setItem('3x3', 135);
-  //   console.log(localStorage.getItem('3x3'));
-  // }
 
   static contextType = LangContext;
 
@@ -36,6 +28,10 @@ class UserPanel extends React.Component {
   }
 
 	render() {
+    console.log('HIGHSCORES:', this.props.highscores);
+    
+
+
     this.DBG && console.log('[UserPanel.render]');
     const games = this.props.availableGames;
     const allGames = games.concat(games.map( (game) => game + '+' )).map( (game) => {
@@ -50,7 +46,7 @@ class UserPanel extends React.Component {
           <GameInfo 
             gameLabel={gameLabel} 
             personalBest={this.props.user.personalBests[game]} 
-            highscore={this.props.highscores[game]}
+            highscore={this.props.highscores ? this.props.highscores[game] : null}
             selected={selected}/>
         </li>
       )
