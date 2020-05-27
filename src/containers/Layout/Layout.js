@@ -106,6 +106,13 @@ class Layout extends React.Component {
 		this.setState({showChangeUsernameDialog: true})
 	}
 
+	onClearPersonalBestsHandler = () => {
+		console.log('onClearPersonalBestsHandler');
+		if (this.props.storage) {
+			localStorage.removeItem('slidePuzzleScores');
+		}
+	}
+
 	render() {
 		const auth = this.props.showAuth ? <Auth clickCancelCall={this.onAuthCancelClickedHandler} /> : null;
 
@@ -117,6 +124,8 @@ class Layout extends React.Component {
 		if (this.state.showModal) {
 			modal = <Modal clickCall={this.onClickAnywhereHandler} />;
 		}
+
+		const localStorageWarning = !this.props.storage && this.props.user.anonymous ? <LocalStorageWarning/> : null;
 
 		return (
 			<div
@@ -139,6 +148,7 @@ class Layout extends React.Component {
 						expanded={this.state.settingsExpanded}
 						clickCall={() => this.settingsClickHandler()}
 						showChangeUsernameDialog={() => this.onChangeUsernameHandler()}
+						showClearPersonalBestsDialog={() => this.onClearPersonalBestsHandler()}
 					/>
 					<LanguageSelector
 						expanded={this.state.langSelectorExpanded}
@@ -147,7 +157,7 @@ class Layout extends React.Component {
 					/>
 				</div>
 				{this.props.children}
-				<LocalStorageWarning storage={this.props.storage} anonymous={this.props.anonymous} />
+				{localStorageWarning}
 				{modal}
 				{auth}
 				{changeUsernameDialog}				

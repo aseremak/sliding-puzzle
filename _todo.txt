@@ -1,12 +1,16 @@
 context API langSelector - https://stackoverflow.com/questions/54357274/dynamically-swap-css-in-react
 
-dodać Redux
-
-uwierzytelnianie / authentication
-
 auth - check if user.username already exists
 
 auth - catching and handling errors
 
-anonymous user - ooptin to clear personalBest in HighScores
+add secured requests
+
+add log at the bottom of app - last actions e.g. Anonumous beat his personal best, Adamek set a new highscore
+
+add Confirmation component to confirm actions e.g. clearing storage or logging out
+
+reload user.personalBests after clearing personal Bests and update userPanel
+
+logging out should show confirmation dialog and moves to userpanel if confirmed
 
