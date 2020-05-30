@@ -17,6 +17,8 @@ export const CHANGE_USERNAME_FAIL = 'CHANGE_USERNAME_FAIL';
 export const HIGHSCORES_GET_START = 'HIGHSCORES_GET_START';
 export const HIGHSCORES_GET_SUCCESS = 'HIGHSCORES_GET_SUCCESS';
 export const HIGHSCORES_GET_FAIL = 'HIGHSCORES_GET_FAIL';
+export const HIGHSCORES_COMPARE_NEW_SCORE_START = 'HIGHSCORES_COMPARE_NEW_SCORE_START';
+export const HIGHSCORES_COMPARE_NEW_SCORE_END = 'HIGHSCORES_COMPARE_NEW_SCORE_END';
 export const USER_GET_PERSONAL_BESTS_FROM_STORAGE = 'USER_GET_PERSONAL_BESTS_FROM_STORAGE';
 export const USER_SET_PERSONAL_BESTS = 'USER_SET_PERSONAL_BESTS';
 export const USER_NEW_PERSONAL_BEST = 'USER_NEW_PERSONAL_BEST';
@@ -240,3 +242,13 @@ export const user_new_personal_best = (gameType, time) => {
 		}
 	};
 };
+
+export const highscores_compare_new_score = (newScore) => {
+	return (dispatch, getState, score=newScore) => {
+		dispatch({ type: HIGHSCORES_COMPARE_NEW_SCORE_START} );
+		console.log('highscores before highscores_get', getState().highscores);
+		dispatch(highscores_get());
+		console.log('highscores after highscores_get', getState().highscores);
+		dispatch({ type: HIGHSCORES_COMPARE_NEW_SCORE_END} );
+	}
+}

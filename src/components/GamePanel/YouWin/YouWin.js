@@ -1,45 +1,59 @@
 import React from 'react';
 import './YouWin.css';
 import Button from '../../UI/Button/Button';
+import Spinner from '../../UI/Spinner/Spinner';
 
 const youWin = (props) => {
-  console.log('[YouWin.js] anonymous, storage:', props.anonymous, props.storage);
+  console.log('[YouWin.js] newHighscores:', props.newHighscore);
   
-  let info = [];
+  let infoPersonalBest = [];
   if (props.newPersonalBest) {
-    // if (props.anonymous) {
-    //   if(props.storage) {
-    //     info.push(<p>This is your new Personal Best!</p>)
-    //   } else {
-    //     info.push(<p>Web Storage Disabled. Unable to store your score.</p>)
-    //   }
-    // } else {
-    //   info.push(<p>This is your new Personal Best!</p>)
-    // }
     if (props.anonymous && !props.storage) {
-      info.push(<p key="p1">Web Storage Disabled. Unable to store your score.</p>)
+      infoPersonalBest.push(<p key="p1">Web Storage Disabled. Unable to store your score.</p>)
     } else {
-      info.push(<p key="p2">This is your new Personal Best!</p>)
+      infoPersonalBest.push(<p key="p2">This is your new Personal Best!</p>)
     }
   };
-  if (props.newHighscore) {
+
+  let infoHighscore = null;
+
+  if (props.newHighscore === null) { // waiting for the end of checking highscores
+    infoHighscore = (
+      <>
+        <p style={{fontSize: '0.7em'}}>Your score is being compared with The High Score Table...</p>
+        <Spinner vMargin="1%" />
+      </>);
+  }
+  else if (props.newHighscore) {
+    infoHighscore = [];
+    if (props.newHighscore.rank === 0) {
+      console.log('props.newHighscore.rank === 0');
+      
+      infoHighscore.push( props.anonymous ? <p key="p3">Your score is better than High Score!</p> : <p key="p4">You've just set a New High Score!!!</p>)
+    } else {
+      console.log('props.newHighscore.rank === 0 ELSE:', infoHighscore);
+      
+      infoHighscore.push(<p key="p5">Your score is {props.newHighscore.rank + 1} in The High Scores Table.</p>);
+      console.log('props.newHighscore.rank === 0 ELSE 2:', infoHighscore);
+    }
     if (props.anonymous) {
-      info.push(<p key="p3">Your score is better than High Score!<br/>(but it won't be saved because you're not logged in)</p>)
-    } else {
-      info.push(<p key="p4">You've just set a New High Score!!!</p>)
+      infoHighscore.push(<p style={{fontSize: '0.7em'}} key="p6">(Your score won't be saved into The High Scores Table because you're not logged in)</p>)
     }
   };
+
+  console.log(infoHighscore, infoPersonalBest);
+  
 
   return (
     <div className="YouWin">
       <h2 className="stdBlockStrong">CONGRATULATIONS!</h2><br/>
-      <p>Your time: <span>{props.time}</span></p>
-      {info}<br/>
+      <p>Your score: <span>{props.time}</span></p>
+      {infoPersonalBest}<br/>
+      {infoHighscore}<br/>
       <Button 
           callClick={props.clickOkButton}
         >OK
       </Button>	 
-      {/* <button onClick={props.clickOkButton}>OK</button> */}
     </div>
   )
 };
