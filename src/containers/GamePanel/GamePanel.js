@@ -36,7 +36,7 @@ class GamePanel extends React.Component {
 			timer: 0,
 			win: false,
 			newPersonalBest: false,
-			newHighscore: null, // object {value: number, rank: number} on null
+			newHighscoreAnonymous: null, // object {value: number, rank: number} false or null
 													// for YouWin component null means that highscores are being checked
 			bestScores: { ...this.props.bestScores } // save initial props.bestScores in order to push then to
 			// BestScores component as constant values
@@ -131,35 +131,38 @@ class GamePanel extends React.Component {
 	checkNewHighscore = (time) => {
 		console.log('[checkNewHighscore]');
 
-		// this.props.compareNewHighscore(time);
-
 		// return null;
 
-		const highscores = this.props.highscores[this.props.game.type];
-
-		for (let pos = 0; pos < highscores.length; pos++) {
-			// console.log(`CHECKING score: ${time} < ${highscores[pos].score}, position: ${pos}`);
-			if (time < highscores[pos].score) {
-				// console.log(`score: ${time} < ${highscores[pos].score}, position: ${pos}`);
+		if (!this.props.anonymous) {
+			// CALL ACTION
+			this.props.newScoreCheckHigscores(this.props.game.type, time);
+			// this.setState({newHighscoreAnonymous: false})
+		} else {
+			// CHECKING FOR HIGHSCORE ONLY LOCALLY
+			const highscores = this.props.highscores[this.props.game.type];
+			console.log('highscores:', highscores);
+			for (let pos = 0; pos < highscores.length; pos++) {
+				if (time < highscores[pos].score) {
+					this.setState({
+						newHighscoreAnonymous: {
+							value: time,
+							rank: pos
+						}
+					});
+					console.log('New Highscore found at positin:' + pos);
+					return null;
+				}
+			}
+	
+			if (highscores.length < 10) {
 				this.setState({
-					newHighscore: {
+					newHighscoreAnonymous: {
 						value: time,
-						rank: pos
+						rank: highscores.length
 					}
 				});
-				return null;
+				console.log('new highscore because of empty rank at position: ' + highscores.length);
 			}
-		}
-		console.log('New Highscore because of empty rank');
-
-		if (highscores.length < 10) {
-			this.setState({
-				newHighscore: {
-					value: time,
-					rank: highscores.length
-				}
-			});
-			console.log('new highscore at position: ' + highscores.length);
 		}
 	};
 
@@ -183,12 +186,14 @@ class GamePanel extends React.Component {
 	};
 
 	handleCompareHighscores = () => {
-		this.props.compareNewHighscore(33);
+		this.props.newScoreCheckHigscores('3x3+', 33);
 	}
 
 	render() {
 		const boardWidth = this.props.boardWidth;
 		const pieceWidth = boardWidth / this.props.game.size;
+
+		const computedNewHighscore = this.props.anonymous ? this.state.newHighscoreAnonymous : this.props.newHighscore;
 
 		const youWin = this.state.win ? (
 			<Modal clickCall={this.props.endGameRef}>
@@ -197,8 +202,9 @@ class GamePanel extends React.Component {
 					storage={this.props.storage}
 					anonymous={this.props.anonymous}
 					newPersonalBest={this.state.newPersonalBest}
-					newHighscore={this.state.newHighscore}
+					newHighscore={computedNewHighscore}
 					clickOkButton={this.props.endGameRef}
+					loadingHighscoresError={this.props.loadingHighscoresError}
 				/>
 			</Modal>
 		) : null;
@@ -230,7 +236,9 @@ class GamePanel extends React.Component {
 const mapStateToProps = (state) => {
 	return {
 		// user: state.user,
-		highscores: state.highscores
+		highscores: state.highscores,
+		newHighscore: state.newHighscore,
+		loadingHighscoresError: state.loadingHighscoresError
 	};
 };
 
@@ -239,7 +247,7 @@ const mapDispatchToProps = (dispatch) => {
 		// getHighscores: () => dispatch(actions.highscores_get()),
 		// setPersonalBests: (personalBest) => dispatch(actions.user_set_personal_bests(personalBest)),
 		newPersonalBest: (gameType, time) => dispatch(actions.user_new_personal_best(gameType, time)),
-		compareNewHighscore: (score) => dispatch(actions.highscores_compare_new_score(score)),
+		newScoreCheckHigscores: (gameType, score) => dispatch(actions.highscores_new_score_check(gameType, score)),
 	};
 };
 

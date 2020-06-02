@@ -27,27 +27,23 @@ const youWin = (props) => {
   else if (props.newHighscore) {
     infoHighscore = [];
     if (props.newHighscore.rank === 0) {
-      console.log('props.newHighscore.rank === 0');
-      
       infoHighscore.push( props.anonymous ? <p key="p3">Your score is better than High Score!</p> : <p key="p4">You've just set a New High Score!!!</p>)
     } else {
-      console.log('props.newHighscore.rank === 0 ELSE:', infoHighscore);
-      
       infoHighscore.push(<p key="p5">Your score is {props.newHighscore.rank + 1} in The High Scores Table.</p>);
-      console.log('props.newHighscore.rank === 0 ELSE 2:', infoHighscore);
     }
     if (props.anonymous) {
       infoHighscore.push(<p style={{fontSize: '0.7em'}} key="p6">(Your score won't be saved into The High Scores Table because you're not logged in)</p>)
     }
   };
 
-  console.log(infoHighscore, infoPersonalBest);
-  
+  if (props.loadingHighscoresError) {
+    infoHighscore = <p style={{fontSize: '0.7em'}}>An unknown error occured during comparing your score with High Scores.</p>
+  }
 
   return (
     <div className="YouWin">
       <h2 className="stdBlockStrong">CONGRATULATIONS!</h2><br/>
-      <p>Your score: <span>{props.time}</span></p>
+      <p>Your score: <span>{props.time}</span></p><br/>
       {infoPersonalBest}<br/>
       {infoHighscore}<br/>
       <Button 

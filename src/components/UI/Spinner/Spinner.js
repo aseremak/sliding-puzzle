@@ -12,9 +12,6 @@ const spinner = (props) => {
 		}
 	}
 
-	console.log(addStyle);
-	
-
 	return (
 		<div className="lds-spinner" style={addStyle}>
 			<div />

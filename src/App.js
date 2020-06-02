@@ -86,8 +86,9 @@ class App extends React.Component {
 		this.setState({ lang: lang });
 	};
 
-	GameHandler = () => {
-		console.log('[App.js] GameHandler');
+	endGameHandler = () => {
+		console.log('[App.js] endGameHandler');
+		this.props.getHighscores();
 		this.setState({
 			activePanel: 'user',
 			gameStarted: false
@@ -117,8 +118,8 @@ class App extends React.Component {
 						anonymous={this.props.user.anonymous}
 						// gameStartedRef={() => this.gameStartedHandler()}
 						gameStartedRef={this.gameStartedHandler}
-						// endGameRef={() => this.GameHandler()}
-						endGameRef={this.GameHandler}
+						// endGameRef={() => this.endGameHandler()}
+						endGameRef={this.endGameHandler}
 					/>
 				);
 				break;

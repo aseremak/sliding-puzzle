@@ -14,11 +14,15 @@ export const AUTH_LOGOUT = 'AUTH_LOGOUT';
 export const CHANGE_USERNAME_START = 'CHANGE_USERNAME_START';
 export const CHANGE_USERNAME_SUCCESS = 'CHANGE_USERNAME_SUCCESS';
 export const CHANGE_USERNAME_FAIL = 'CHANGE_USERNAME_FAIL';
+
 export const HIGHSCORES_GET_START = 'HIGHSCORES_GET_START';
 export const HIGHSCORES_GET_SUCCESS = 'HIGHSCORES_GET_SUCCESS';
 export const HIGHSCORES_GET_FAIL = 'HIGHSCORES_GET_FAIL';
-export const HIGHSCORES_COMPARE_NEW_SCORE_START = 'HIGHSCORES_COMPARE_NEW_SCORE_START';
-export const HIGHSCORES_COMPARE_NEW_SCORE_END = 'HIGHSCORES_COMPARE_NEW_SCORE_END';
+export const HIGHSCORES_NEW_SCORE_CHECK_START = 'HIGHSCORES_NEW_SCORE_CHECK_START';
+export const HIGHSCORES_NEW_SCORE_CHECK_END = 'HIGHSCORES_NEW_SCORE_CHECK_END';
+export const HIGHSCORES_NEW_SCORE_CHECK_ERROR = 'HIGHSCORES_NEW_SCORE_CHECK_ERROR';
+export const HIGHSCORES_NEW_SCORE_UPDATE = 'HIGHSCORES_NEW_SCORE_UPDATE';
+
 export const USER_GET_PERSONAL_BESTS_FROM_STORAGE = 'USER_GET_PERSONAL_BESTS_FROM_STORAGE';
 export const USER_SET_PERSONAL_BESTS = 'USER_SET_PERSONAL_BESTS';
 export const USER_NEW_PERSONAL_BEST = 'USER_NEW_PERSONAL_BEST';
@@ -173,11 +177,10 @@ export const change_username = (newUsername) => {
 export const highscores_get = () => {
 	return (dispatch) => {
 		dispatch({ type: HIGHSCORES_GET_START });
-		axios
+		return axios
 			.get('highscores.json')
 			.then((res) => {
 				if (res.data) {
-					console.log(res.data);
 					dispatch({
 						type: HIGHSCORES_GET_SUCCESS,
 						highscores: res.data
@@ -243,12 +246,64 @@ export const user_new_personal_best = (gameType, time) => {
 	};
 };
 
-export const highscores_compare_new_score = (newScore) => {
-	return (dispatch, getState, score=newScore) => {
-		dispatch({ type: HIGHSCORES_COMPARE_NEW_SCORE_START} );
-		console.log('highscores before highscores_get', getState().highscores);
-		dispatch(highscores_get());
-		console.log('highscores after highscores_get', getState().highscores);
-		dispatch({ type: HIGHSCORES_COMPARE_NEW_SCORE_END} );
-	}
-}
+export const highscores_new_score_check = (gameType, score) => {
+	return (dispatch, getState) => {
+		dispatch({ type: 'HIGHSCORES_NEW_SCORE_CHECK_START' });
+		axios.get('highscores.json2').then((res) => {
+			const 
+				highscores = res.data[gameType],
+				newHighscore = {
+					score: score,
+					username: getState().user.username,
+					usersId: getState().user.usersId
+				};
+			let
+				rank = null,
+				updatedHighscores = null;
+
+			if (highscores) {
+				console.log('highscores:', highscores, gameType);
+				for (let pos = 0; pos < highscores.length; pos++) {
+					if (score < highscores[pos].score) {
+						rank = pos;
+						break;
+					}
+				}
+				if (!rank && highscores.length < 10) {
+					rank = highscores.length;
+				}
+				if (rank) {
+					updatedHighscores = highscores.slice(0, rank).concat(newHighscore, highscores.slice(rank));
+				}
+			} else {
+				// HIGHSCORES ARRAY IS EMPTY
+				rank = 0;
+				updatedHighscores = [newHighscore];
+			}
+
+			if (updatedHighscores) {
+				dispatch({
+					type: HIGHSCORES_NEW_SCORE_UPDATE,
+					newHighscore: {
+						value: score,
+						rank: rank
+					}
+				});
+				axios
+					.patch(`highscores.json`, { [gameType]: updatedHighscores })
+					.then((res) => {
+						console.log(res.data);
+					});
+				console.log('UPDATED HIGHSCORES: ', updatedHighscores);
+			} else {
+				dispatch({ type: 'HIGHSCORES_NEW_SCORE_CHECK_END' });
+			}
+		})
+		.catch( error => {
+			dispatch( {
+				type: HIGHSCORES_NEW_SCORE_CHECK_ERROR,
+				error: error.response.data.error || { message: 'Unable to load highscores due to unknown error' }
+			})
+		});
+	};
+};
