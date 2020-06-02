@@ -1,4 +1,9 @@
 import React from 'react';
+import { connect } from 'react-redux';
+
+import * as actions from '../../store/actions';
+import './GamePanel.css';
+
 import PuzzleArray from '../../PuzzleArray';
 import PuzzleBoard from '../../components/GamePanel/PuzzleBoard/PuzzleBoard';
 import Auxi from '../../hoc/Auxi/Auxi';
@@ -7,12 +12,10 @@ import ImagePreview from '../../components/ImagePreview/ImagePreview';
 import BestScores from '../../components/GamePanel/BestScores/BestScores';
 import YouWin from '../../components/GamePanel/YouWin/YouWin';
 import Button from '../../components/UI/Button/Button';
-import './GamePanel.css';
 import localization from '../../localization';
 import LangContext from '../../hoc/context/LangContext';
 
 import Modal from '../../components/UI/Modal/Modal';
-
 
 let puzzleArr = [];
 
@@ -21,8 +24,6 @@ const txt = new localization();
 class GamePanel extends React.Component {
 	constructor(props) {
 		super(props);
-
-		this.DBG = true;
 
 		const size = this.props.game.size;
 		const pieceWidth = this.props.boardWidth / size;
@@ -35,24 +36,18 @@ class GamePanel extends React.Component {
 			timer: 0,
 			win: false,
 			newPersonalBest: false,
-			newHighscore: false,
-			bestScores: {}
+			newHighscoreAnonymous: null, // object {value: number, rank: number} false or null
+													// for YouWin component null means that highscores are being checked
+			bestScores: { ...this.props.bestScores } // save initial props.bestScores in order to push then to
+			// BestScores component as constant values
 		};
 
-		this.DBG && console.log('[GamePanel.constructor] timer: ' + this.timer);
 		this.timer = null;
 	}
 
-  static contextType = LangContext;
+	static contextType = LangContext;
 
 	componentDidMount() {
-		this.setState({bestScores: this.props.bestScores}); // save initial props.bestScores 
-		// in order to push them as constant values to BestScores component and not update them when
-		// user beats bestScore or personalBest and this.props.bestScores will change
-		
-		this.DBG && console.log('[GamePanel.componentDidMount]');
-		this.DBG && console.log('   - boardWidth? ' + this.props.boardWidth);
-
 		const size = this.props.game.size;
 		const pieceWidth = this.props.boardWidth / size;
 		puzzleArr.setPieceSize(pieceWidth);
@@ -63,28 +58,18 @@ class GamePanel extends React.Component {
 	}
 
 	handleShuffle = () => {
-		this.DBG && console.log('[GamePanel.handleShuffle] Handle shuffle');
-
 		puzzleArr.shuffle();
 		this.setState({
-			positions: puzzleArr.positionsArray(),
+			positions: puzzleArr.positionsArray()
 			// originalPositions: puzzleArr.originalPositionsArray()
 		});
-	};	
+	};
 
 	componentDidUpdate(prevProps, prevState) {
-		this.DBG && console.log('[GamePanel.componentDidUpdate]');
-		this.DBG && console.log('   - gameStarted? ' + this.props.gameStarted);
-		this.DBG && console.log('   - boardWidth? ' + this.props.boardWidth);
-
 		if (prevProps.boardWidth !== this.props.boardWidth) {
 			const size = this.props.game.size;
 			const pieceWidth = this.props.boardWidth / size;
 			puzzleArr.setPieceSize(pieceWidth);
-			// this.DBG &&
-			// 	console.log('[GamePanel.componentDidUpdate] 1st time or after resize - recalculate state.positions');
-			this.DBG &&
-				console.log('[GamePanel.componentDidUpdate] calculate positions array + set original positions');
 			this.setState({
 				positions: puzzleArr.positionsArray(),
 				originalPositions: puzzleArr.originalPositionsArray()
@@ -96,7 +81,6 @@ class GamePanel extends React.Component {
 		// EXAMPLE e.target.id = 'puzzle_11'
 		const id = parseInt(e.target.id.substr(7));
 
-		this.DBG && console.log('[GamePanel.handlePieceClicked] handle piece clicked ' + id);
 		if (puzzleArr.movePiece(id)) {
 			if (!this.props.gameStarted) {
 				// STARTING THE GAME
@@ -106,33 +90,83 @@ class GamePanel extends React.Component {
 			this.setState({
 				positions: puzzleArr.positionsArray()
 			});
-			this.DBG && console.log(puzzleArr.disorderRatio());
-			if (puzzleArr.disorderRatio() === 1) { // >= 0.6
+			if (puzzleArr.disorderRatio() === 1) {
 				this.stopTimer();
-				this.checkNewPersonalBestOrHighscore(this.state.timer);
+				this.checkNewPersonalBest(this.state.timer);
+				this.checkNewHighscore(this.state.timer);
 				this.setState({ win: true });
 			}
 		}
 	};
 
-	checkNewPersonalBestOrHighscore = (time) => {
-		this.DBG && console.log('[GamePanel.js] checkNewPersonalBestOrHighscore');
-		
-		this.DBG && console.log('highscore:' + this.props.bestScores.highscore + '  personalBest:' + this.props.bestScores.personalBest);
-		const highscore = this.props.bestScores.highscore || Infinity;
+	checkNewPersonalBest = (time) => {
+		console.log('[checkNewPersonalBest]');
+
 		const personalBest = this.props.bestScores.personalBest || Infinity;
-		this.DBG && console.log('highscore2:' + highscore + '  personalBest2:' + personalBest);
-		if (time < highscore) {
-			this.setState({newHighscore: true})
-		};
 		if (time < personalBest) {
-			this.setState({newPersonalBest: true})
-			this.props.callUserBrokePersonalBest(this.props.game.type, time);
-		};
-	}
+			this.setState({ newPersonalBest: true });
+			this.props.newPersonalBest(this.props.game.type, time);
+
+			if (this.props.anonymous) {
+				// UPDATE LOCAL STORAGE SCORES
+				if (this.props.storage) {
+					let scores = localStorage.getItem('slidePuzzleScores');
+					let updatedScores = {};
+					if (scores) {
+						updatedScores = JSON.parse(scores);
+						console.log(updatedScores);
+						updatedScores[this.props.game.type] = time;
+					} else {
+						updatedScores = {
+							[this.props.game.type]: time
+						};
+					}
+					localStorage.setItem('slidePuzzleScores', JSON.stringify(updatedScores));
+					console.log('[GamePanel.js] personal best saved in localStorage.');
+				}
+			}
+		}
+	};
+
+	checkNewHighscore = (time) => {
+		console.log('[checkNewHighscore]');
+
+		// return null;
+
+		if (!this.props.anonymous) {
+			// CALL ACTION
+			this.props.newScoreCheckHigscores(this.props.game.type, time);
+			// this.setState({newHighscoreAnonymous: false})
+		} else {
+			// CHECKING FOR HIGHSCORE ONLY LOCALLY
+			const highscores = this.props.highscores[this.props.game.type];
+			console.log('highscores:', highscores);
+			for (let pos = 0; pos < highscores.length; pos++) {
+				if (time < highscores[pos].score) {
+					this.setState({
+						newHighscoreAnonymous: {
+							value: time,
+							rank: pos
+						}
+					});
+					console.log('New Highscore found at positin:' + pos);
+					return null;
+				}
+			}
+	
+			if (highscores.length < 10) {
+				this.setState({
+					newHighscoreAnonymous: {
+						value: time,
+						rank: highscores.length
+					}
+				});
+				console.log('new highscore because of empty rank at position: ' + highscores.length);
+			}
+		}
+	};
 
 	handleResign = () => {
-		this.DBG && console.log('[GamePanel.handleResign]');
 		this.stopTimer();
 		this.props.endGameRef();
 	};
@@ -140,35 +174,40 @@ class GamePanel extends React.Component {
 	addSecond = () => {
 		const newTimer = this.state.timer + 1;
 		this.setState({ timer: newTimer });
-		this.DBG && console.log('[GamePanel.addSecond]           - tik -' + this.state.timer);
-	}
+	};
 
 	startTimer = () => {
 		this.setState({ timer: 0 });
 		this.timer = setInterval(this.addSecond.bind(this), 1000);
-	}
+	};
 
 	stopTimer = () => {
-		this.DBG && console.log('[GamePanel.stopTimer] stop timer!');
 		clearInterval(this.timer);
+	};
+
+	handleCompareHighscores = () => {
+		this.props.newScoreCheckHigscores('3x3+', 33);
 	}
 
 	render() {
-		this.DBG && console.log('[GamePanel.render]');
 		const boardWidth = this.props.boardWidth;
 		const pieceWidth = boardWidth / this.props.game.size;
 
-		const youWin = this.state.win ? 
+		const computedNewHighscore = this.props.anonymous ? this.state.newHighscoreAnonymous : this.props.newHighscore;
+
+		const youWin = this.state.win ? (
 			<Modal clickCall={this.props.endGameRef}>
-			<YouWin 
-				time={this.state.timer}
-				storage={this.props.storage}
-				anonymous={this.props.anonymous}
-				newPersonalBest={this.state.newPersonalBest}
-				newHighscore={this.state.newHighscore}
-				clickOkButton={this.props.endGameRef} /> 
+				<YouWin
+					time={this.state.timer}
+					storage={this.props.storage}
+					anonymous={this.props.anonymous}
+					newPersonalBest={this.state.newPersonalBest}
+					newHighscore={computedNewHighscore}
+					clickOkButton={this.props.endGameRef}
+					loadingHighscoresError={this.props.loadingHighscoresError}
+				/>
 			</Modal>
-			: null;
+		) : null;
 
 		return (
 			<Auxi>
@@ -186,14 +225,30 @@ class GamePanel extends React.Component {
 					<ImagePreview width={boardWidth} />
 				</div>
 				{youWin}
-        <Button callClick={this.handleShuffle}>{txt.SHUFFLE_AGAIN[this.context.lang]}</Button>	        
-				<Button callClick={this.handleResign}>{txt.RESIGN[this.context.lang]}</Button>				
-				<Button callClick={() => this.props.callUserBrokePersonalBest(this.props.game.type, 77)}>New PersonalBest!</Button>				
-				{/* <button onClick={this.handleShuffle}>{txt.SHUFFLE_AGAIN[this.context.lang]}</button> */}
-				{/* <button onClick={this.handleResign}>{txt.RESIGN[this.context.lang]}</button> */}
+				<Button callClick={this.handleShuffle}>{txt.SHUFFLE_AGAIN[this.context.lang]}</Button>
+				<Button callClick={this.handleResign}>{txt.RESIGN[this.context.lang]}</Button>
+				<Button callClick={this.handleCompareHighscores}>call compare new score</Button>
 			</Auxi>
 		);
 	}
 }
 
-export default GamePanel;
+const mapStateToProps = (state) => {
+	return {
+		// user: state.user,
+		highscores: state.highscores,
+		newHighscore: state.newHighscore,
+		loadingHighscoresError: state.loadingHighscoresError
+	};
+};
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		// getHighscores: () => dispatch(actions.highscores_get()),
+		// setPersonalBests: (personalBest) => dispatch(actions.user_set_personal_bests(personalBest)),
+		newPersonalBest: (gameType, time) => dispatch(actions.user_new_personal_best(gameType, time)),
+		newScoreCheckHigscores: (gameType, score) => dispatch(actions.highscores_new_score_check(gameType, score)),
+	};
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(GamePanel);

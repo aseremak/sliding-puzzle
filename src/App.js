@@ -12,14 +12,14 @@ import LangContext from './hoc/context/LangContext';
 
 class App extends React.Component {
 	state = {
-		availableGames: [ '3x3', '4x4', '5x5' ],
+		availableGames: [ '3x3+', '4x4+', '5x5+', '3x3', '4x4', '5x5' ],
 		activePanel: 'user', // 'select-image' / 'user' / 'game'
 		boardWidth: null, // 240 / 360 / 420
 		game: {
 			type: null, // '3x3+',
 			size: null, // 3,
 			withNumbers: true,
-			highscore: 999 // 123, // THIS VALUE EXIST IN highscores TOO, MAY IT SHOULD BE MOVED FROM HERE
+			highscore: 0 // 123, // THIS VALUE EXIST IN highscores TOO, MAY IT SHOULD BE MOVED FROM HERE
 		},
 		gameStarted: false,
 		image: null,
@@ -53,29 +53,6 @@ class App extends React.Component {
 		});
 	}
 
-	userBrokePersonalBest = (gameType, time) => {
-		console.log('[App.js] userBrokePersonalBest - args:', gameType, time);
-		if (this.props.user.anonymous) {
-			// UPDATE LOCAL STORAGE SCORES
-			if (this.state.isStorageEnabled) {
-				let scores = localStorage.getItem('slidePuzzleScores');
-				let updatedScores = {};
-				if (scores) {
-					updatedScores = JSON.parse(scores);
-					console.log(updatedScores);
-					updatedScores[gameType] = time;
-				} else {
-					updatedScores = {
-						[gameType]: time
-					};
-				}
-				localStorage.setItem('slidePuzzleScores', JSON.stringify(updatedScores));
-				console.log('[App.js] personal best saved in localStorage.');
-			}
-		}
-		this.props.newPersonalBest(gameType, time);
-	};
-
 	updateWidth(val) {
 		// console.log(val);
 		let newVal;
@@ -94,13 +71,14 @@ class App extends React.Component {
 	}
 
 	userClickedPlayButtonHandler = (game) => {
-		const gameObj = { ...this.state.game };
-		gameObj.type = game;
-		gameObj.size = parseInt(game.slice(0, 1));
-		gameObj.withNumbers = game.endsWith('+');
 		this.setState({
 			activePanel: 'game',
-			game: gameObj
+			game: {
+				type: game,
+				size: parseInt(game.slice(0, 1)),
+				withNumbers: game.endsWith('+'),
+				highscore: this.props.highscores[game][0].score
+			}
 		});
 	};
 
@@ -108,8 +86,9 @@ class App extends React.Component {
 		this.setState({ lang: lang });
 	};
 
-	GameHandler = () => {
-		console.log('[App.js] GameHandler');
+	endGameHandler = () => {
+		console.log('[App.js] endGameHandler');
+		this.props.getHighscores();
 		this.setState({
 			activePanel: 'user',
 			gameStarted: false
@@ -139,9 +118,8 @@ class App extends React.Component {
 						anonymous={this.props.user.anonymous}
 						// gameStartedRef={() => this.gameStartedHandler()}
 						gameStartedRef={this.gameStartedHandler}
-						// endGameRef={() => this.GameHandler()}
-						endGameRef={this.GameHandler}
-						callUserBrokePersonalBest={(type, time) => this.userBrokePersonalBest(type, time)}
+						// endGameRef={() => this.endGameHandler()}
+						endGameRef={this.endGameHandler}
 					/>
 				);
 				break;

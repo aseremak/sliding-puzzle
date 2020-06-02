@@ -14,3 +14,10 @@ reload user.personalBests after clearing personal Bests and update userPanel
 
 logging out should show confirmation dialog and moves to userpanel if confirmed
 
+after user change name: update username if that user exists in highscores 
+
+show information when loading highscores failed
+
+check localization at start and set language 
+
+Cookie information

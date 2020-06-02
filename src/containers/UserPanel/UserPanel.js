@@ -10,16 +10,9 @@ import LangContext from '../../hoc/context/LangContext';
 const txt = new localization();
 
 class UserPanel extends React.Component {
-	constructor(props) {
-    super(props);
-    this.DBG = true;
-
-    this.DBG && console.log('[UserPanel.js] constructor');
-
-    this.state = {
-      selectedGame: null,
-    }
-  }
+  state = {
+    selectedGame: null,
+  }  
 
   static contextType = LangContext;
 
@@ -28,13 +21,7 @@ class UserPanel extends React.Component {
   }
 
 	render() {
-    console.log('HIGHSCORES:', this.props.highscores);
-    
-
-
-    this.DBG && console.log('[UserPanel.render]');
-    const games = this.props.availableGames;
-    const allGames = games.concat(games.map( (game) => game + '+' )).map( (game) => {
+    const games = this.props.availableGames.map( (game) => {
       const selected = this.state.selectedGame === game;
       const gameLabel = game.endsWith('+') ? game.slice(0, game.length - 1) + txt.WITH_NUMBERS[this.context.lang] : game;
       return (
@@ -46,7 +33,7 @@ class UserPanel extends React.Component {
           <GameInfo 
             gameLabel={gameLabel} 
             personalBest={this.props.user.personalBests[game]} 
-            highscore={this.props.highscores ? this.props.highscores[game] : null}
+            highscore={this.props.highscores ? this.props.highscores[game][0].score : null}
             selected={selected}/>
         </li>
       )
@@ -67,7 +54,7 @@ class UserPanel extends React.Component {
                 averagePB="Avg. Personal Best" 
                 highscore="High Score"/>
             </li>
-            {allGames}
+            {games}
           </ul>
         </div> 
         <Button 

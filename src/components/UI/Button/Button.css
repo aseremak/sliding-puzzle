@@ -16,6 +16,10 @@
   /* box-shadow: 1px 1px 15px red; */
 }
 
+.Button:focus {
+  outline: none;
+}
+
 .Button:disabled {
   color: #aaa;
   text-shadow: none;

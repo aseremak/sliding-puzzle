@@ -14,11 +14,16 @@ const initialState = {
 	error: null,
 	loadingAuth: false,
 	loadingHighscores: false,
+	loadingHighscoresError: false,
 	loadingPersonalBests: false,
+	newHighscore: false, // null = STATE OF CHECKING, false = NO HIGH SCORE OR OBJECT {value: number, rank: number}
 	authenticating: false,
 	isStorageEnabled: undefined,
-	highscores: null
+	highscores: null,
+	thunk: null
 };
+
+const AVAILABLE_GAMES = [ '3x3+', '4x4+', '5x5+', '3x3', '4x4', '5x5' ];
 
 const auth_start = (state, action) => {
 	return updateObject(state, {
@@ -101,15 +106,50 @@ const highscores_get_start = (state, action) => {
 };
 
 const highscores_get_success = (state, action) => {
+	// CONVERTS HIGHSCORES OBJECT TAKEN FROM FIREBASE
+	// DELETES userId,
+	// EMPTY HIGHSCORE REPLACES BY: {score: 99999, username: '---'}
+	const highscores = {};
+
+	AVAILABLE_GAMES.forEach((gameType) => {
+		if (action.highscores[gameType]) {
+			const orgArr = action.highscores[gameType];
+			const newArr = [];
+			orgArr.forEach((highscore) => {
+				newArr.push({
+					score: highscore.score,
+					username: highscore.username
+				});
+			});
+			highscores[gameType] = newArr;
+		} else {
+			highscores[gameType] = [
+				{
+					score: 99999,
+					username: '---'
+				}
+			];
+		}
+	});
 	return updateObject(state, {
-		highscores: action.highscores,
+		highscores: highscores,
 		loadingHighscores: false
 	});
 };
 
 const highscores_get_fail = (state, action) => {
+	const highscores = {};
+	AVAILABLE_GAMES.forEach((gameType) => {
+		highscores[gameType] = [
+			{
+				score: 0,
+				username: '---'
+			}
+		];
+	});
+
 	return updateObject(state, {
-		highscores: null,
+		highscores: highscores,
 		error: action.error,
 		loadingHighscores: false
 	});
@@ -162,6 +202,32 @@ const user_patch_personal_best_fail = (state, action) => {
 	});
 };
 
+const highscores_new_score_check_start = (state, action) => {
+	return updateObject(state, {
+		newHighscore: null,
+		loadingHighscoresError: false
+	});
+};
+
+const highscores_new_score_check_end = (state, action) => {
+	return updateObject(state, {
+		newHighscore: false
+	});
+};
+
+const highscores_new_score_check_error = (state, action) => {
+	return updateObject(state, {
+		newHighscore: false,
+		loadingHighscoresError: action.error
+	});
+};
+
+const highscores_new_score_update = (state, action) => {
+	return updateObject(state, {
+		newHighscore: { ...action.newHighscore }
+	});
+};
+
 const reducer = (state = initialState, action) => {
 	switch (action.type) {
 		case actionTypes.AUTH_START:
@@ -182,12 +248,23 @@ const reducer = (state = initialState, action) => {
 			return change_username_success(state, action);
 		case actionTypes.CHANGE_USERNAME_FAIL:
 			return change_username_fail(state, action);
+
 		case actionTypes.HIGHSCORES_GET_START:
 			return highscores_get_start(state, action);
 		case actionTypes.HIGHSCORES_GET_SUCCESS:
 			return highscores_get_success(state, action);
 		case actionTypes.HIGHSCORES_GET_FAIL:
 			return highscores_get_fail(state, action);
+
+		case actionTypes.HIGHSCORES_NEW_SCORE_CHECK_START:
+			return highscores_new_score_check_start(state, action);
+		case actionTypes.HIGHSCORES_NEW_SCORE_CHECK_ERROR:
+			return highscores_new_score_check_error(state, action);
+		case actionTypes.HIGHSCORES_NEW_SCORE_CHECK_END:
+			return highscores_new_score_check_end(state, action);
+		case actionTypes.HIGHSCORES_NEW_SCORE_UPDATE:
+			return highscores_new_score_update(state, action);
+
 		case actionTypes.USER_SET_PERSONAL_BESTS:
 			return user_set_personal_bests(state, action);
 		case actionTypes.USER_NEW_PERSONAL_BEST:
