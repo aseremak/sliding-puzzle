@@ -7,11 +7,11 @@ const settings = (props) => {
 	const commands = props.isLoggedIn
 		? (
 			<>
-			<li>Change Password</li>
+			<li onClick={props.showChangePasswordDialog}>Change Password</li>
 			<li onClick={props.showChangeUsernameDialog}>Change User Name</li>
 			</>
 		) 
-		: <li onClick={props.showClearPersonalBestsDialog}>Clear Personal Bests</li>
+		: <li onClick={props.clearPersonalBestCall}>Clear Personal Bests</li>
 
 	return (
 		<Dropdown 

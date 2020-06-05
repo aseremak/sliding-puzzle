@@ -13,7 +13,7 @@ import LangContext from './hoc/context/LangContext';
 class App extends React.Component {
 	state = {
 		availableGames: [ '3x3+', '4x4+', '5x5+', '3x3', '4x4', '5x5' ],
-		activePanel: 'user', // 'select-image' / 'user' / 'game'
+		// activePanel: 'user', // 'select-image' / 'user' / 'game'
 		boardWidth: null, // 240 / 360 / 420
 		game: {
 			type: null, // '3x3+',
@@ -21,21 +21,21 @@ class App extends React.Component {
 			withNumbers: true,
 			highscore: 0 // 123, // THIS VALUE EXIST IN highscores TOO, MAY IT SHOULD BE MOVED FROM HERE
 		},
-		gameStarted: false,
+		// timerStarted: false,
 		image: null,
 		lang: 'en',
 		isStorageEnabled: undefined
 	};
 
 	componentDidMount() {
-		console.log('[App.js] componentDidMount, isStorageEnabled enabled? ');
 		this.getDataFromLocalStorage();
 		this.props.getHighscores();
+		this.props.authAutoLogin();
+		
 	}
 
 	getDataFromLocalStorage() {
 		// CHECK IF storageEnabled AND SET user.personalBests
-		console.log('[App.js] getDataFromLocalStorage');
 		let personalBests = {};
 		let storageEnabled = undefined;
 		try {
@@ -54,7 +54,6 @@ class App extends React.Component {
 	}
 
 	updateWidth(val) {
-		// console.log(val);
 		let newVal;
 		if (val >= 1000) {
 			newVal = 420;
@@ -72,7 +71,6 @@ class App extends React.Component {
 
 	userClickedPlayButtonHandler = (game) => {
 		this.setState({
-			activePanel: 'game',
 			game: {
 				type: game,
 				size: parseInt(game.slice(0, 1)),
@@ -80,6 +78,7 @@ class App extends React.Component {
 				highscore: this.props.highscores[game][0].score
 			}
 		});
+		this.props.gameStart();
 	};
 
 	langSelectHandler = (lang) => {
@@ -87,21 +86,23 @@ class App extends React.Component {
 	};
 
 	endGameHandler = () => {
-		console.log('[App.js] endGameHandler');
 		this.props.getHighscores();
-		this.setState({
-			activePanel: 'user',
-			gameStarted: false
-		});
+		this.props.timerStop();
+		this.props.gameEnd();
 	};
 
-	gameStartedHandler = () => {
-		this.setState({ gameStarted: true });
-	};
+	clearPersonalBestsHandler = () => {
+		console.log('clearPersonalBestCall');
+		
+		if (this.state.isStorageEnabled) {
+			localStorage.removeItem('slidePuzzleScores');
+			this.getDataFromLocalStorage();
+		}
+	}	
 
 	render() {
 		let panel = <Spinner />;
-		switch (this.state.activePanel) {
+		switch (this.props.activePanel) {
 			case 'game':
 				const bestScores = {
 					highscore: this.state.game.highscore,
@@ -111,14 +112,10 @@ class App extends React.Component {
 					<GamePanel
 						boardWidth={this.state.boardWidth}
 						game={this.state.game}
-						gameStarted={this.state.gameStarted}
 						image={this.state.image}
 						bestScores={bestScores}
 						storage={this.state.isStorageEnabled}
 						anonymous={this.props.user.anonymous}
-						// gameStartedRef={() => this.gameStartedHandler()}
-						gameStartedRef={this.gameStartedHandler}
-						// endGameRef={() => this.endGameHandler()}
 						endGameRef={this.endGameHandler}
 					/>
 				);
@@ -145,6 +142,7 @@ class App extends React.Component {
 					<Layout
 						langSelect={this.langSelectHandler}
 						storage={this.state.isStorageEnabled}
+						clearPersonalBestCall={this.clearPersonalBestsHandler}
 						widthRef={(val) => this.updateWidth(val)}>
 						{panel}
 					</Layout>
@@ -157,15 +155,20 @@ class App extends React.Component {
 const mapStateToProps = (state) => {
 	return {
 		user: state.user,
+		activePanel: state.activePanel,
 		highscores: state.highscores,
 	};
 };
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		getHighscores: () => dispatch(actions.highscores_get()),
-		setPersonalBests: (personalBest) => dispatch(actions.user_set_personal_bests(personalBest)),
-		newPersonalBest: (gameType, time) => dispatch(actions.user_new_personal_best(gameType, time))
+		getHighscores: () => dispatch(actions.highscoresGet()),
+		setPersonalBests: (personalBest) => dispatch(actions.userSetPersonalBests(personalBest)),
+		newPersonalBest: (gameType, time) => dispatch(actions.userNewPersonalBest(gameType, time)),
+		gameStart: () => dispatch(actions.gameStart()),
+		gameEnd: () => dispatch(actions.gameEnd()),
+		timerStop: () => dispatch(actions.timerStop()),
+		authAutoLogin: () => dispatch(actions.authAutoLogin()),
 	};
 };
 

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import './ChangeUsernameDialog.css';
+import './ChangePasswordDialog.css';
 
 import Modal from '../../../UI/Modal/Modal';
 import Input from '../../../UI/Input/Input';
@@ -11,19 +11,33 @@ import Spinner from '../../../UI/Spinner/Spinner';
 import { updateObject, checkValidity } from '../../../../shared/utility';
 import * as actions from '../../../../store/actions';
 
-class ChangeUsername extends Component {
+class ChangePassword extends Component {
 	state = {
 		formIsValid: false,
 		controls: {
-			username: {
+			oldPassword: {
 				elementType: 'input',
 				elementConfig: {
-					type: 'username',
-					placeholder: 'Username (min 3 chars)'
+					type: 'password',
+					placeholder: 'Old password'
 				},
 				validation: {
 					required: true,
-					minLength: 3
+					minLength: 6
+				},
+				valid: false,
+				touched: false,
+				value: ''
+			},
+			newPassword: {
+				elementType: 'input',
+				elementConfig: {
+					type: 'password',
+					placeholder: 'New password (min 6 chars)'
+				},
+				validation: {
+					required: true,
+					minLength: 6
 				},
 				valid: false,
 				touched: false,
@@ -50,11 +64,11 @@ class ChangeUsername extends Component {
 		this.setState({ controls: updatedControls, formIsValid: formIsValid });
 	};
 
+	onChangePasswordHandler = (event) => {
+		console.log('onChangeUSernameHandler in ChangePasswordDialog');
+		this.props.onChangePassword(this.state.controls.oldPassword.value, this.state.controls.newPassword.value);
+	};
 
-	onChangeUsernameHandler = () => {
-		this.props.onChangeUsername(this.state.controls.username.value);
-	}
-	
 	render() {
 		const formElementsArray = [];
 		for (let key in this.state.controls) {
@@ -84,15 +98,12 @@ class ChangeUsername extends Component {
 			spinner = this.props.loading ? <Spinner /> : null;
 		} else {
 			changeUsernameForm = (
-				<div className="ChangeUsername stdBlock">
-					<p>Enter new User Name</p>
+				<div className="ChangePassword stdBlock">
+					<p>Enter old password, new password and click Change Password button</p>
 					{form}
 					{errorMessage}
-					<Button 
-						disabled={!this.state.formIsValid} 
-						callClick={this.onChangeUsernameHandler}
-					>
-						Change User Name
+					<Button disabled={!this.state.formIsValid} callClick={this.onChangePasswordHandler}>
+						Change Password
 					</Button>
 				</div>
 			);
@@ -105,8 +116,8 @@ class ChangeUsername extends Component {
 			</div>
 		);
 		if (this.props.actionSuccess) {
-			content = <p>Your username was changed successfully.</p>
-		}		
+			content = <p>Your password was changed successfully.</p>
+		}
 
 		return (
 			<Modal>
@@ -128,8 +139,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		onChangeUsername: (name) => dispatch(actions.changeUsername(name))
+		onChangePassword: (oldpass, newpass) => dispatch(actions.changePassword(oldpass, newpass))
 	};
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ChangeUsername);
+export default connect(mapStateToProps, mapDispatchToProps)(ChangePassword);

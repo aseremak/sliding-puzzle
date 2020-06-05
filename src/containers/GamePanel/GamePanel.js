@@ -77,15 +77,21 @@ class GamePanel extends React.Component {
 		}
 	}
 
+	componentWillUnmount() {
+		if (this.timer !== null) {
+			clearInterval(this.timer)
+		}
+		this.props.timerStop();
+	}
+
 	handlePieceClicked = (e) => {
 		// EXAMPLE e.target.id = 'puzzle_11'
 		const id = parseInt(e.target.id.substr(7));
 
 		if (puzzleArr.movePiece(id)) {
-			if (!this.props.gameStarted) {
+			if (!this.props.timerStarted) {
 				// STARTING THE GAME
 				this.startTimer();
-				this.props.gameStartedRef();
 			}
 			this.setState({
 				positions: puzzleArr.positionsArray()
@@ -134,9 +140,7 @@ class GamePanel extends React.Component {
 		// return null;
 
 		if (!this.props.anonymous) {
-			// CALL ACTION
 			this.props.newScoreCheckHigscores(this.props.game.type, time);
-			// this.setState({newHighscoreAnonymous: false})
 		} else {
 			// CHECKING FOR HIGHSCORE ONLY LOCALLY
 			const highscores = this.props.highscores[this.props.game.type];
@@ -179,15 +183,12 @@ class GamePanel extends React.Component {
 	startTimer = () => {
 		this.setState({ timer: 0 });
 		this.timer = setInterval(this.addSecond.bind(this), 1000);
+		this.props.timerStart();
 	};
 
 	stopTimer = () => {
 		clearInterval(this.timer);
 	};
-
-	handleCompareHighscores = () => {
-		this.props.newScoreCheckHigscores('3x3+', 33);
-	}
 
 	render() {
 		const boardWidth = this.props.boardWidth;
@@ -227,7 +228,6 @@ class GamePanel extends React.Component {
 				{youWin}
 				<Button callClick={this.handleShuffle}>{txt.SHUFFLE_AGAIN[this.context.lang]}</Button>
 				<Button callClick={this.handleResign}>{txt.RESIGN[this.context.lang]}</Button>
-				<Button callClick={this.handleCompareHighscores}>call compare new score</Button>
 			</Auxi>
 		);
 	}
@@ -235,19 +235,19 @@ class GamePanel extends React.Component {
 
 const mapStateToProps = (state) => {
 	return {
-		// user: state.user,
 		highscores: state.highscores,
 		newHighscore: state.newHighscore,
-		loadingHighscoresError: state.loadingHighscoresError
+		loadingHighscoresError: state.loadingHighscoresError,
+		timerStarted: state.timerStarted
 	};
 };
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		// getHighscores: () => dispatch(actions.highscores_get()),
-		// setPersonalBests: (personalBest) => dispatch(actions.user_set_personal_bests(personalBest)),
-		newPersonalBest: (gameType, time) => dispatch(actions.user_new_personal_best(gameType, time)),
-		newScoreCheckHigscores: (gameType, score) => dispatch(actions.highscores_new_score_check(gameType, score)),
+		newPersonalBest: (gameType, time) => dispatch(actions.userNewPersonalBest(gameType, time)),
+		newScoreCheckHigscores: (gameType, score) => dispatch(actions.highscoresNewScoreCheck(gameType, score)),
+		timerStart: () => dispatch(actions.timerStart()),
+		timerStop: () => dispatch(actions.timerStop()),
 	};
 };
 

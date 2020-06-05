@@ -20,9 +20,8 @@ const modal = (props) => {
 		<div
 			className="Modal"
 			onClick={(e) => {
-				console.log('modal clicked');
 				e.stopPropagation();
-				props.clickCall();
+				if (props.clickCall) {props.clickCall()};
 			}}
 		>
 			{box}

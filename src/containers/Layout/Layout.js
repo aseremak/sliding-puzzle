@@ -9,29 +9,29 @@ import Settings from '../../components/Layout/Settings/Settings';
 import LocalStorageWarning from '../../components/Layout/LocalStorageWarning/LocalStorageWarning';
 import Modal from '../../components/UI/Modal/Modal';
 import Auth from '../Auth/Auth';
-import ChangeUsernameDialog from '../../components/Layout/Settings/ChangeUsernameDialog/ChangeUsernameDialog'
+import ChangeUsernameDialog from '../../components/Layout/Settings/ChangeUsernameDialog/ChangeUsernameDialog';
+import ChangePasswordDialog from '../../components/Layout/Settings/ChangePasswordDialog/ChangePasswordDialog';
+import ConfirmDialog from '../../components/Layout/ConfirmDialog/ConfirmDialog';
+
 
 class Layout extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			width: null,
-			settingsExpanded: false,
-			langSelectorExpanded: false,
-			showModal: false,
-			showChangeUsernameDialog: false
-			// showAuth: false
-			// modalChildren: null,
-			// lang: 'en'
-		};
-		this.DBG = false;
-	}
+
+	state = {
+		width: null,
+		settingsExpanded: false,
+		langSelectorExpanded: false,
+		showModal: false,
+		showChangeUsernameDialog: false,
+		showChangePasswordDialog: false,
+		showConfirmDialog: false,
+		callAfterConfirmation: null,
+		// lang: 'en'
+	};
 
 	updateWidth = () => {
 		// const curWidth = this.myElement.clientWidth;
 		const curWidth = this.myElement.parentNode.parentNode.parentNode.clientWidth; // BODY WIDTH
 
-		this.DBG && console.log('[Laoyut.js updateWidth] clientWidth: ', curWidth);
 		if (this.state.width !== curWidth) {
 			this.setState({ width: curWidth });
 			this.props.widthRef(curWidth);
@@ -41,19 +41,15 @@ class Layout extends React.Component {
 	componentDidMount() {
 		if (!this.state.width) {
 			this.updateWidth();
-			// console.log('state.width = ' + this.state.width);
 		}
-		// console.log('componentDidMount');
 		window.addEventListener('resize', () => this.updateWidth());
 	}
 
 	componentWillUnmount() {
-		// console.log('ComponentWillUnmount');
 		window.removeEventListener('resize', () => this.updateWidth());
 	}
 
 	langSelectorClickHandler = () => {
-		console.log('langSelectorClickHandler');
 		this.setState({
 			langSelectorExpanded: true,
 			showModal: true
@@ -61,7 +57,6 @@ class Layout extends React.Component {
 	};
 
 	settingsClickHandler = () => {
-		console.log('settingsClickHandler');
 		this.setState({
 			settingsExpanded: true,
 			showModal: true
@@ -69,7 +64,6 @@ class Layout extends React.Component {
 	};
 
 	onClickAnywhereHandler = () => {
-		console.log('Layout onClickAnywhereHandler');
 		this.setState({
 			langSelectorExpanded: false,
 			settingsExpanded: false,
@@ -77,48 +71,97 @@ class Layout extends React.Component {
 		});
 	};
 
-	onLoginOrSigninClickHandler = (event) => {
-		console.log('onLoginOrSigninClickHandler');
-		// event.preventDefault();
+	onLogInOutOrSignInClickHandler = (event) => {
 		event.stopPropagation();
-		// this.setState({showAuth: true})
-		if (this.props.isLoggedIn) {
-			this.props.callAuthLogout();
+		if (this.props.activePanel === 'game') {
+			this.setState({ 
+				showConfirmDialog: true,
+				callAfterConfirmation: 'auth',
+			})
 		} else {
-			this.props.callAuthShowWindow();
+			if (this.props.isLoggedIn) {
+				this.props.callAuthLogout();
+			} else {
+				this.props.callAuthShowWindow();
+			}
 		}
 	};
 
+
+	onClearPersonalBestsHandler = () => {
+		console.log('clear personal best handler');
+		
+		this.setState({ 
+			showConfirmDialog: true,
+			callAfterConfirmation: 'clearPersonalBests',
+		})
+	}		
+
+	onConfirmYesClickHandler = (event) => {
+		event.stopPropagation();
+		if (this.state.callAfterConfirmation === 'auth') {
+			if (this.props.isLoggedIn) {
+				this.props.callAuthLogout();
+			} else {
+				this.props.callAuthShowWindow();
+			}
+		} else {
+			this.props.clearPersonalBestCall(); 
+		}
+
+		this.setState({
+			showConfirmDialog: false,
+			callAfterConfirmation: null,
+		});
+	}
+
+	onConfirmNoClickHandler = (event) => {
+		event.stopPropagation();
+		this.setState({
+			showConfirmDialog: false,
+			callAfterConfirmation: null,
+		});
+	}
+
+
 	onAuthCancelClickedHandler = (event) => {
-		console.log('onAuthCancelClickedHandler');
 		event.stopPropagation();
 		this.props.callAuthCloseWindow();
 	};
 
 	onDialogCancelClickedHandler = (event) => {
-		console.log('onAuthCancelClickedHandler');
 		event.stopPropagation();
-		this.setState({showChangeUsernameDialog: false})
+		this.setState({
+			showChangeUsernameDialog: false,
+			showChangePasswordDialog: false
+		})
 	};
 
 	onChangeUsernameHandler = () => {
-		console.log('ChangeUsernameHandler');
+		this.props.resetErrors();
 		this.setState({showChangeUsernameDialog: true})
 	}
 
-	onClearPersonalBestsHandler = () => {
-		console.log('onClearPersonalBestsHandler');
-		if (this.props.storage) {
-			localStorage.removeItem('slidePuzzleScores');
-		}
+	onChangePasswordHandler = () => {
+		this.props.resetErrors();
+		this.setState({showChangePasswordDialog: true})
 	}
 
 	render() {
 		const auth = this.props.showAuth ? <Auth clickCancelCall={this.onAuthCancelClickedHandler} /> : null;
 
-		const changeUsernameDialog = this.state.showChangeUsernameDialog
-			? <ChangeUsernameDialog clickCancelCall={this.onDialogCancelClickedHandler}/>
-			: null; 
+		let dialog = null;	
+		if (this.state.showConfirmDialog) {
+			dialog = <ConfirmDialog 
+				callConfirmYes = {this.onConfirmYesClickHandler}
+				callConfirmNo = {this.onConfirmNoClickHandler}
+				message = {this.state.callAfterConfirmation === 'auth' ? 'The active game will be canceled.' : 'Scores stored in local storage will be deleted.' }
+				/>
+		} else if (this.state.showChangeUsernameDialog) {
+			dialog = <ChangeUsernameDialog clickCancelCall={this.onDialogCancelClickedHandler}/>
+		} else if ( this.state.showChangePasswordDialog) {
+			dialog = <ChangePasswordDialog clickCancelCall={this.onDialogCancelClickedHandler}/>
+		} 
 
 		let modal = false;
 		if (this.state.showModal) {
@@ -139,7 +182,7 @@ class Layout extends React.Component {
 						<span>{this.props.user.username}</span>
 						<button 
 							className={this.props.isLoggedIn ? null : "Stress"}
-							onClick={this.onLoginOrSigninClickHandler}>
+							onClick={this.onLogInOutOrSignInClickHandler}>
 							{this.props.isLoggedIn ? 'Log Out' : 'Log In'}
 						</button>
 					</div>
@@ -148,7 +191,8 @@ class Layout extends React.Component {
 						expanded={this.state.settingsExpanded}
 						clickCall={() => this.settingsClickHandler()}
 						showChangeUsernameDialog={() => this.onChangeUsernameHandler()}
-						showClearPersonalBestsDialog={() => this.onClearPersonalBestsHandler()}
+						showChangePasswordDialog={() => this.onChangePasswordHandler()}
+						clearPersonalBestCall={() => this.onClearPersonalBestsHandler()} 
 					/>
 					<LanguageSelector
 						expanded={this.state.langSelectorExpanded}
@@ -160,7 +204,7 @@ class Layout extends React.Component {
 				{localStorageWarning}
 				{modal}
 				{auth}
-				{changeUsernameDialog}				
+				{dialog}				
 			</div>
 		);
 	}
@@ -170,15 +214,17 @@ const mapStateToProps = (state) => {
 	return {
 		showAuth: state.authenticating,
 		user: state.user,
-		isLoggedIn: state.isLoggedIn
+		isLoggedIn: state.isLoggedIn,
+		activePanel: state.activePanel
 	};
 };
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		callAuthShowWindow: () => dispatch(actions.auth_open_window()),
-		callAuthCloseWindow: () => dispatch(actions.auth_close_window()),
-		callAuthLogout: () => dispatch(actions.auth_logout())
+		callAuthShowWindow: () => dispatch(actions.authOpenWindow()),
+		callAuthCloseWindow: () => dispatch(actions.authCloseWindow()),
+		callAuthLogout: () => dispatch(actions.authLogout()),
+		resetErrors: () => dispatch(actions.resetErrors()),
 	};
 };
 

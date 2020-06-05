@@ -10,6 +10,9 @@ const initialState = {
 		idToken: null,
 		personalBests: undefined
 	},
+	actionSuccess: false,
+	activePanel: 'user',
+	timerStarted: false,
 	isLoggedIn: false,
 	error: null,
 	loadingAuth: false,
@@ -18,30 +21,37 @@ const initialState = {
 	loadingPersonalBests: false,
 	newHighscore: false, // null = STATE OF CHECKING, false = NO HIGH SCORE OR OBJECT {value: number, rank: number}
 	authenticating: false,
-	isStorageEnabled: undefined,
 	highscores: null,
 	thunk: null
 };
 
 const AVAILABLE_GAMES = [ '3x3+', '4x4+', '5x5+', '3x3', '4x4', '5x5' ];
 
-const auth_start = (state, action) => {
+const resetErrors = (state, action) => {
+	return updateObject(state, {
+		error: null,
+		actionSuccess: false
+	})
+}
+
+const authStart = (state, action) => {
 	return updateObject(state, {
 		error: null,
 		loadingAuth: true
 	});
 };
 
-const auth_success = (state, action) => {
+const authSuccess = (state, action) => {
 	return updateObject(state, {
 		user: { ...action.user },
 		isLoggedIn: true,
 		error: null,
-		loadingAuth: false
+		loadingAuth: false,
+		activePanel: 'user'
 	});
 };
 
-const auth_fail = (state, action) => {
+const authFail = (state, action) => {
 	return updateObject(state, {
 		isLoggedIn: false,
 		error: action.error,
@@ -49,19 +59,19 @@ const auth_fail = (state, action) => {
 	});
 };
 
-const auth_open_window = (state, action) => {
+const authOpenWindow = (state, action) => {
 	return updateObject(state, {
 		authenticating: true,
 		error: null
 	});
 };
-const auth_close_window = (state, action) => {
+const authCloseWindow = (state, action) => {
 	return updateObject(state, {
 		authenticating: false
 	});
 };
 
-const auth_logout = (state, action) => {
+const authLogout = (state, action) => {
 	return updateObject(state, {
 		user: {
 			username: 'Anonymous',
@@ -69,35 +79,81 @@ const auth_logout = (state, action) => {
 			localId: null,
 			usersId: null,
 			idToken: null,
-			personalBests: undefined
+			personalBests: {}
 		},
-		isLoggedIn: false
+		isLoggedIn: false,
+		activePanel: 'user'
 	});
 };
 
-const change_username_start = (state, action) => {
+// ***
+
+const authAutoLogin = (state, action) => {
+	if (action.user) {
+		return updateObject(state, {
+			user: updateObject(state.user, {
+				localId: action.user.localId,
+				idToken: action.user.idToken
+			})
+		});
+	} else {
+		return state;
+	}
+};
+
+const changeUsernameStart = (state, action) => {
 	return updateObject(state, {
 		error: null,
-		loadingAuth: true
+		loadingAuth: true,
+		actionSuccess: false
 	});
 };
 
-const change_username_success = (state, action) => {
+const changeUsernameSuccess = (state, action) => {
 	return updateObject(state, {
 		user: updateObject(state.user, { username: action.newUsername }),
-		error: true,
-		loadingAuth: false
+		// error: true, MOZE BYŁO TO POTRZEBNE???
+		error: false, // MOŻE TAK LEPIEJ?
+		loadingAuth: false,
+		actionSuccess: true
 	});
 };
 
-const change_username_fail = (state, action) => {
+const changeUsernameFail = (state, action) => {
 	return updateObject(state, {
 		error: action.error,
-		loadingAuth: false
+		loadingAuth: false,
+		actionSuccess: false
 	});
 };
 
-const highscores_get_start = (state, action) => {
+
+const changePasswordStart = (state, action) => {
+	return updateObject(state, {
+		error: null,
+		loadingAuth: true,
+		actionSuccess: false
+	});
+};
+
+const changePasswordSuccess = (state, action) => {
+	return updateObject(state, {
+		// error: true, MOZE BYŁO TO POTRZEBNE???
+		error: false, // MOŻE TAK LEPIEJ?
+		loadingAuth: false,
+		actionSuccess: true
+	});
+};
+
+const changePasswordFail = (state, action) => {
+	return updateObject(state, {
+		error: action.error,
+		loadingAuth: false,
+		actionSuccess: false
+	});
+};
+
+const highscoresGetStart = (state, action) => {
 	return updateObject(state, {
 		highscores: null,
 		error: null,
@@ -105,7 +161,7 @@ const highscores_get_start = (state, action) => {
 	});
 };
 
-const highscores_get_success = (state, action) => {
+const highscoresGetSuccess = (state, action) => {
 	// CONVERTS HIGHSCORES OBJECT TAKEN FROM FIREBASE
 	// DELETES userId,
 	// EMPTY HIGHSCORE REPLACES BY: {score: 99999, username: '---'}
@@ -137,7 +193,7 @@ const highscores_get_success = (state, action) => {
 	});
 };
 
-const highscores_get_fail = (state, action) => {
+const highscoresGetFail = (state, action) => {
 	const highscores = {};
 	AVAILABLE_GAMES.forEach((gameType) => {
 		highscores[gameType] = [
@@ -155,7 +211,7 @@ const highscores_get_fail = (state, action) => {
 	});
 };
 
-const user_get_personal_best_from_storage = (state, action) => {
+const userGetPersonalBestFromStorage = (state, action) => {
 	return updateObject(state, {
 		user: updateObject(state.user, {
 			personalBests: {}
@@ -163,7 +219,7 @@ const user_get_personal_best_from_storage = (state, action) => {
 	});
 };
 
-const user_set_personal_bests = (state, action) => {
+const userSetPersonalBests = (state, action) => {
 	return updateObject(state, {
 		user: updateObject(state.user, {
 			personalBests: action.personalBests
@@ -171,7 +227,7 @@ const user_set_personal_bests = (state, action) => {
 	});
 };
 
-const user_new_personal_best = (state, action) => {
+const userNewPersonalBest = (state, action) => {
 	return updateObject(state, {
 		user: updateObject(state.user, {
 			personalBests: updateObject(state.user.personalBests, {
@@ -181,102 +237,140 @@ const user_new_personal_best = (state, action) => {
 	});
 };
 
-const user_patch_personal_best_start = (state, action) => {
+const userPatchPersonalBestStart = (state, action) => {
 	return updateObject(state, {
 		error: null,
 		loadingPersonalBests: true
 	});
 };
 
-const user_patch_personal_best_success = (state, action) => {
+const userPatchPersonalBestSuccess = (state, action) => {
 	return updateObject(state, {
 		error: null,
 		loadingPersonalBests: false
 	});
 };
 
-const user_patch_personal_best_fail = (state, action) => {
+const userPatchPersonalBestFail = (state, action) => {
 	return updateObject(state, {
 		error: action.error,
 		loadingPersonalBests: false
 	});
 };
 
-const highscores_new_score_check_start = (state, action) => {
+const highscoresNewScoreCheckStart = (state, action) => {
 	return updateObject(state, {
 		newHighscore: null,
 		loadingHighscoresError: false
 	});
 };
 
-const highscores_new_score_check_end = (state, action) => {
+const highscoresNewScoreCheckEnd = (state, action) => {
 	return updateObject(state, {
 		newHighscore: false
 	});
 };
 
-const highscores_new_score_check_error = (state, action) => {
+const highscoresNewScoreCheckError = (state, action) => {
 	return updateObject(state, {
 		newHighscore: false,
 		loadingHighscoresError: action.error
 	});
 };
 
-const highscores_new_score_update = (state, action) => {
+const highscoresNewScoreUpdate = (state, action) => {
 	return updateObject(state, {
 		newHighscore: { ...action.newHighscore }
 	});
 };
 
+const gameStart = (state, action) => {
+	return updateObject(state, { activePanel: 'game' });
+};
+
+const gameEnd = (state, action) => {
+	return updateObject(state, { activePanel: 'user' });
+};
+
+const timerStart = (state, action) => {
+	return updateObject(state, { timerStarted: true });
+};
+
+const timerStop = (state, action) => {
+	return updateObject(state, { timerStarted: false });
+};
+
 const reducer = (state = initialState, action) => {
 	switch (action.type) {
+		case actionTypes.RESET_ERRORS:
+			return resetErrors(state, action);
+
 		case actionTypes.AUTH_START:
-			return auth_start(state, action);
+			return authStart(state, action);
 		case actionTypes.AUTH_SUCCESS:
-			return auth_success(state, action);
+			return authSuccess(state, action);
 		case actionTypes.AUTH_FAIL:
-			return auth_fail(state, action);
+			return authFail(state, action);
 		case actionTypes.AUTH_OPEN_WINDOW:
-			return auth_open_window(state, action);
+			return authOpenWindow(state, action);
 		case actionTypes.AUTH_CLOSE_WINDOW:
-			return auth_close_window(state, action);
+			return authCloseWindow(state, action);
 		case actionTypes.AUTH_LOGOUT:
-			return auth_logout(state, action);
+			return authLogout(state, action);
+		case actionTypes.AUTH_AUTO_LOGIN:
+			return authAutoLogin(state, action);
+
 		case actionTypes.CHANGE_USERNAME_START:
-			return change_username_start(state, action);
+			return changeUsernameStart(state, action);
 		case actionTypes.CHANGE_USERNAME_SUCCESS:
-			return change_username_success(state, action);
+			return changeUsernameSuccess(state, action);
 		case actionTypes.CHANGE_USERNAME_FAIL:
-			return change_username_fail(state, action);
+			return changeUsernameFail(state, action);
+
+		case actionTypes.CHANGE_PASSWORD_START:
+			return changePasswordStart(state, action);
+		case actionTypes.CHANGE_PASSWORD_SUCCESS:
+			return changePasswordSuccess(state, action);
+		case actionTypes.CHANGE_PASSWORD_FAIL:
+			return changePasswordFail(state, action);
 
 		case actionTypes.HIGHSCORES_GET_START:
-			return highscores_get_start(state, action);
+			return highscoresGetStart(state, action);
 		case actionTypes.HIGHSCORES_GET_SUCCESS:
-			return highscores_get_success(state, action);
+			return highscoresGetSuccess(state, action);
 		case actionTypes.HIGHSCORES_GET_FAIL:
-			return highscores_get_fail(state, action);
+			return highscoresGetFail(state, action);
 
 		case actionTypes.HIGHSCORES_NEW_SCORE_CHECK_START:
-			return highscores_new_score_check_start(state, action);
+			return highscoresNewScoreCheckStart(state, action);
 		case actionTypes.HIGHSCORES_NEW_SCORE_CHECK_ERROR:
-			return highscores_new_score_check_error(state, action);
+			return highscoresNewScoreCheckError(state, action);
 		case actionTypes.HIGHSCORES_NEW_SCORE_CHECK_END:
-			return highscores_new_score_check_end(state, action);
+			return highscoresNewScoreCheckEnd(state, action);
 		case actionTypes.HIGHSCORES_NEW_SCORE_UPDATE:
-			return highscores_new_score_update(state, action);
+			return highscoresNewScoreUpdate(state, action);
 
 		case actionTypes.USER_SET_PERSONAL_BESTS:
-			return user_set_personal_bests(state, action);
+			return userSetPersonalBests(state, action);
 		case actionTypes.USER_NEW_PERSONAL_BEST:
-			return user_new_personal_best(state, action);
+			return userNewPersonalBest(state, action);
 		case actionTypes.USER_PATCH_PERSONAL_BEST_START:
-			return user_patch_personal_best_start(state, action);
+			return userPatchPersonalBestStart(state, action);
 		case actionTypes.USER_PATCH_PERSONAL_BEST_SUCCESS:
-			return user_patch_personal_best_success(state, action);
+			return userPatchPersonalBestSuccess(state, action);
 		case actionTypes.USER_PATCH_PERSONAL_BEST_FAIL:
-			return user_patch_personal_best_fail(state, action);
+			return userPatchPersonalBestFail(state, action);
 		case actionTypes.USER_GET_PERSONAL_BESTS_FROM_STORAGE:
-			return user_get_personal_best_from_storage(state, action);
+			return userGetPersonalBestFromStorage(state, action);
+
+		case actionTypes.GAME_START:
+			return gameStart(state, action);
+		case actionTypes.GAME_END:
+			return gameEnd(state, action);
+		case actionTypes.TIMER_START:
+			return timerStart(state, action);
+		case actionTypes.TIMER_STOP:
+			return timerStop(state, action);
 
 		default:
 			return state;

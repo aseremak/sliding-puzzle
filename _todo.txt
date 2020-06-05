@@ -4,15 +4,12 @@ auth - check if user.username already exists
 
 auth - catching and handling errors
 
+auth - do something with expiration time of session
+
 add secured requests
 
 add log at the bottom of app - last actions e.g. Anonumous beat his personal best, Adamek set a new highscore
 
-add Confirmation component to confirm actions e.g. clearing storage or logging out
-
-reload user.personalBests after clearing personal Bests and update userPanel
-
-logging out should show confirmation dialog and moves to userpanel if confirmed
 
 after user change name: update username if that user exists in highscores 
 
@@ -21,3 +18,13 @@ show information when loading highscores failed
 check localization at start and set language 
 
 Cookie information
+
+
+Add change password dialog, autologin and some enhancements
+
+-new ChangePasswordDialog component
+-autologin at startup according to data stored in localStorage
+-redirecting to userPanel after logging in/out, precedeed by confirmation dialog
+-gameStarted and activePanel moved to reducer
+-gameStarted renamed to timerStarted
+
