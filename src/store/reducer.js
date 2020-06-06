@@ -31,8 +31,8 @@ const resetErrors = (state, action) => {
 	return updateObject(state, {
 		error: null,
 		actionSuccess: false
-	})
-}
+	});
+};
 
 const authStart = (state, action) => {
 	return updateObject(state, {
@@ -126,7 +126,6 @@ const changeUsernameFail = (state, action) => {
 		actionSuccess: false
 	});
 };
-
 
 const changePasswordStart = (state, action) => {
 	return updateObject(state, {
@@ -284,13 +283,22 @@ const highscoresNewScoreUpdate = (state, action) => {
 	});
 };
 
-const gameStart = (state, action) => {
+const gamePanelOpen = (state, action) => {
 	return updateObject(state, { activePanel: 'game' });
 };
 
-const gameEnd = (state, action) => {
+const gamePanelClose = (state, action) => {
 	return updateObject(state, { activePanel: 'user' });
 };
+
+const highscoresPanelOpen = (state, action) => {
+	return updateObject(state, { activePanel: 'highscores' });
+};
+
+const highscoresPanelClose = (state, action) => {
+	return updateObject(state, { activePanel: 'user' });
+};
+
 
 const timerStart = (state, action) => {
 	return updateObject(state, { timerStarted: true });
@@ -363,10 +371,14 @@ const reducer = (state = initialState, action) => {
 		case actionTypes.USER_GET_PERSONAL_BESTS_FROM_STORAGE:
 			return userGetPersonalBestFromStorage(state, action);
 
-		case actionTypes.GAME_START:
-			return gameStart(state, action);
-		case actionTypes.GAME_END:
-			return gameEnd(state, action);
+		case actionTypes.GAME_PANEL_OPEN:
+			return gamePanelOpen(state, action);
+		case actionTypes.GAME_PANEL_CLOSE:
+			return gamePanelClose(state, action);
+		case actionTypes.HIGHSCORES_PANEL_OPEN:
+			return highscoresPanelOpen(state, action);
+		case actionTypes.HIGHSCORES_PANEL_CLOSE:
+			return highscoresPanelClose(state, action);
 		case actionTypes.TIMER_START:
 			return timerStart(state, action);
 		case actionTypes.TIMER_STOP:

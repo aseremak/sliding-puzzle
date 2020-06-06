@@ -6,6 +6,8 @@ import * as actions from './store/actions';
 
 import GamePanel from './containers/GamePanel/GamePanel';
 import UserPanel from './containers/UserPanel/UserPanel';
+import HighscoresPanel from './containers/HighscoresPanel/HighscoresPanel';
+
 import Layout from './containers/Layout/Layout';
 import Spinner from './components/UI/Spinner/Spinner';
 import LangContext from './hoc/context/LangContext';
@@ -78,7 +80,7 @@ class App extends React.Component {
 				highscore: this.props.highscores[game][0].score
 			}
 		});
-		this.props.gameStart();
+		this.props.gamePanelOpen();
 	};
 
 	langSelectHandler = (lang) => {
@@ -88,17 +90,23 @@ class App extends React.Component {
 	endGameHandler = () => {
 		this.props.getHighscores();
 		this.props.timerStop();
-		this.props.gameEnd();
+		this.props.gamePanelClose();
 	};
 
 	clearPersonalBestsHandler = () => {
-		console.log('clearPersonalBestCall');
-		
 		if (this.state.isStorageEnabled) {
 			localStorage.removeItem('slidePuzzleScores');
 			this.getDataFromLocalStorage();
 		}
 	}	
+
+	closeHighscoresPanelHandler = () => {
+		this.props.highscoresPanelClose();
+	}
+
+	openHighscoresPanelHandler = () => {
+		this.props.highscoresPanelOpen();
+	}
 
 	render() {
 		let panel = <Spinner />;
@@ -121,6 +129,13 @@ class App extends React.Component {
 				);
 				break;
 
+			case 'highscores':
+				panel = <HighscoresPanel 
+					highscores={this.props.highscores}
+					callClose = {this.closeHighscoresPanelHandler}
+					/>
+				break;
+
 			default:
 				// USERPANEL
 				if ((this.props.user.personalBests || !this.state.isStorageEnabled) && this.props.highscores) {
@@ -130,6 +145,7 @@ class App extends React.Component {
 							clickPlay={this.userClickedPlayButtonHandler}
 							user={this.props.user}
 							highscores={this.props.highscores}
+							callOpenHighscores={this.openHighscoresPanelHandler}
 						/>
 					);
 				}
@@ -165,8 +181,10 @@ const mapDispatchToProps = (dispatch) => {
 		getHighscores: () => dispatch(actions.highscoresGet()),
 		setPersonalBests: (personalBest) => dispatch(actions.userSetPersonalBests(personalBest)),
 		newPersonalBest: (gameType, time) => dispatch(actions.userNewPersonalBest(gameType, time)),
-		gameStart: () => dispatch(actions.gameStart()),
-		gameEnd: () => dispatch(actions.gameEnd()),
+		gamePanelOpen: () => dispatch(actions.gamePanelOpen()),
+		gamePanelClose: () => dispatch(actions.gamePanelClose()),
+		highscoresPanelOpen: () => dispatch(actions.highscoresPanelOpen()),
+		highscoresPanelClose: () => dispatch(actions.highscoresPanelClose()),
 		timerStop: () => dispatch(actions.timerStop()),
 		authAutoLogin: () => dispatch(actions.authAutoLogin()),
 	};

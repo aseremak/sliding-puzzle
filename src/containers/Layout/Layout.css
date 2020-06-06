@@ -80,7 +80,7 @@
 @media (min-width: 600px) {
 	.Layout {
 		width: 570px;
-		font-size: 1.2rem;
+		font-size: 1.0rem;
 	}
 	.Box {
 		left: 0%;
@@ -91,14 +91,14 @@
 @media (min-width: 800px) {
 	.Layout {
 		width: 760px;
-		font-size: 1.4rem;
+		font-size: 1.2rem;
 	}
 }
 
 @media (min-width: 1000px) {
 	.Layout {
 		width: 950px;
-		font-size: 1.6rem;
+		font-size: 1.4rem;
 	}
 	.Box {
 		left: 0%;

@@ -20,11 +20,5 @@ check localization at start and set language
 Cookie information
 
 
-Add change password dialog, autologin and some enhancements
-
--new ChangePasswordDialog component
--autologin at startup according to data stored in localStorage
--redirecting to userPanel after logging in/out, precedeed by confirmation dialog
--gameStarted and activePanel moved to reducer
--gameStarted renamed to timerStarted
+Add Highscores Panel
 

@@ -37,8 +37,10 @@ export const USER_PATCH_PERSONAL_BEST_START = 'USER_PATCH_PERSONAL_BEST';
 export const USER_PATCH_PERSONAL_BEST_SUCCESS = 'USER_PATCH_PERSONAL_BEST_SUCCESS';
 export const USER_PATCH_PERSONAL_BEST_FAIL = 'USER_PATCH_PERSONAL_BEST_FAIL';
 
-export const GAME_START = 'GAME_START';
-export const GAME_END = 'GAME_END';
+export const GAME_PANEL_OPEN = 'GAME_PANEL_OPEN';
+export const GAME_PANEL_CLOSE = 'GAME_PANEL_CLOSE';
+export const HIGHSCORES_PANEL_OPEN = 'HIGHSCORES_PANEL_OPEN';
+export const HIGHSCORES_PANEL_CLOSE = 'HIGHSCORES_PANEL_CLOSE';
 export const TIMER_START = 'TIMER_START';
 export const TIMER_STOP = 'TIMER_STOP';
 
@@ -48,7 +50,6 @@ export const resetErrors = () => {
 		type: RESET_ERRORS
 	}
 }
-
 
 export const authStart = () => {
 	return {
@@ -441,15 +442,27 @@ export const highscoresNewScoreCheck = (gameType, score) => {
 	};
 };
 
-export const gameStart = () => {
+export const gamePanelOpen = () => {
 	return {
-		type: GAME_START
+		type: GAME_PANEL_OPEN
 	}
 }
 
-export const gameEnd = () => {
+export const gamePanelClose = () => {
 	return {
-		type: GAME_END
+		type: GAME_PANEL_CLOSE
+	}
+}
+
+export const highscoresPanelOpen = () => {
+	return {
+		type: HIGHSCORES_PANEL_OPEN
+	}
+}
+
+export const highscoresPanelClose = () => {
+	return {
+		type: HIGHSCORES_PANEL_CLOSE
 	}
 }
 

@@ -1,0 +1,59 @@
+.TablesContainer {
+  padding: 3% 0 1% 0;
+}
+
+.HighscoresTable {
+  background-color: inherit;
+  padding: 1%;
+	width: 100%;
+  display: inline-block;
+  font-size: 0.8em;
+}
+
+.ButtonsContainer {
+  background-color: inherit;
+	width: 100%;
+  display: inline-block;
+}
+
+.HighscoresTable ul li {
+  list-style-type: none;
+  margin: -1px
+}
+
+.HighscoresTable ul li:first-child{
+  font-weight: bold
+}
+
+.HighscoresTable ul li:nth-child(2) {
+  color: red;
+  font-weight: bold;
+}
+
+.Col1 {
+  width: 15%;
+  display: inline-block;
+}
+.Col3 {
+  width: 25%;
+  display: inline-block;
+}
+.Col2 {
+  width: 60%;
+  display: inline-block;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+}
+
+
+
+
+@media (min-width: 600px) {
+  .HighscoresTable,
+  .ButtonsContainer {
+    width: 50%;
+    /* min-width: 350px; */
+	}
+}
+
+

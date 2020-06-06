@@ -1,6 +1,8 @@
 import React from 'react';
-import Auxi from '../../hoc/Auxi/Auxi';
+
 import './UserPanel.css';
+
+import Auxi from '../../hoc/Auxi/Auxi';
 import GameInfo from '../../components/UserPanel/GameInfo/GameInfo';
 import Button from '../../components/UI/Button/Button';
 
@@ -63,8 +65,7 @@ class UserPanel extends React.Component {
         >{txt.PLAY[this.context.lang]}
         </Button>
         <Button 
-          disabled={true}
-          callClick={() => this.props.clickPlay(this.state.selectedGame)}
+          callClick={this.props.callOpenHighscores}
         >High Scores
         </Button>        
 			</Auxi>
