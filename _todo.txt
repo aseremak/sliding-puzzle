@@ -20,5 +20,4 @@ check localization at start and set language
 Cookie information
 
 
-Add Highscores Panel
 
