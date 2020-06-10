@@ -12,16 +12,17 @@ import Layout from './containers/Layout/Layout';
 import Spinner from './components/UI/Spinner/Spinner';
 import LangContext from './hoc/context/LangContext';
 
+const AVAILABLE_GAMES = [ '3x3+', '4x4+', '5x5+', '3x3', '4x4', '5x5' ];
+
 class App extends React.Component {
 	state = {
-		availableGames: [ '3x3+', '4x4+', '5x5+', '3x3', '4x4', '5x5' ],
-		// activePanel: 'user', // 'select-image' / 'user' / 'game'
+		// availableGames: [ '3x3+', '4x4+', '5x5+', '3x3', '4x4', '5x5' ],
 		boardWidth: null, // 240 / 360 / 420
 		game: {
 			type: null, // '3x3+',
 			size: null, // 3,
 			withNumbers: true,
-			highscore: 0 // 123, // THIS VALUE EXIST IN highscores TOO, MAY IT SHOULD BE MOVED FROM HERE
+			highscore: 0 // THIS VALUE EXIST IN highscores TOO, MAY IT SHOULD BE MOVED FROM HERE
 		},
 		// timerStarted: false,
 		image: null,
@@ -33,7 +34,6 @@ class App extends React.Component {
 		this.getDataFromLocalStorage();
 		this.props.getHighscores();
 		this.props.authAutoLogin();
-		
 	}
 
 	getDataFromLocalStorage() {
@@ -141,7 +141,7 @@ class App extends React.Component {
 				if ((this.props.user.personalBests || !this.state.isStorageEnabled) && this.props.highscores) {
 					panel = (
 						<UserPanel
-							availableGames={this.state.availableGames}
+							availableGames={AVAILABLE_GAMES}
 							clickPlay={this.userClickedPlayButtonHandler}
 							user={this.props.user}
 							highscores={this.props.highscores}

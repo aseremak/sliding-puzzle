@@ -65,7 +65,6 @@ class ChangePassword extends Component {
 	};
 
 	onChangePasswordHandler = (event) => {
-		console.log('onChangeUSernameHandler in ChangePasswordDialog');
 		this.props.onChangePassword(this.state.controls.oldPassword.value, this.state.controls.newPassword.value);
 	};
 

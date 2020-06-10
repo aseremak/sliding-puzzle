@@ -8,7 +8,6 @@ const modal = (props) => {
 			<div
 				className="Box"
 				onClick={(e) => {
-					console.log('Box clicked');
 					e.stopPropagation();
 				}}
 			>

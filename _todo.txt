@@ -1,23 +1,30 @@
 context API langSelector - https://stackoverflow.com/questions/54357274/dynamically-swap-css-in-react
 
-auth - check if user.username already exists
+improve saving highscores (there is no action confirming success)
+
+clear storage when user logs in
+
+after user change name: update username if that user exists in highscores 
 
 auth - catching and handling errors
 
 auth - do something with expiration time of session
 
-add secured requests
-
 add log at the bottom of app - last actions e.g. Anonumous beat his personal best, Adamek set a new highscore
-
-
-after user change name: update username if that user exists in highscores 
 
 show information when loading highscores failed
 
 check localization at start and set language 
 
 Cookie information
+
+highscore tables - highlight current user scores
+
+YouWin: if user set a new highscore - move to HighscoresPanel instead of UserPanel
+
+
+
+
 
 
 

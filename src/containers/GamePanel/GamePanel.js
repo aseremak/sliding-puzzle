@@ -106,13 +106,10 @@ class GamePanel extends React.Component {
 	};
 
 	checkNewPersonalBest = (time) => {
-		console.log('[checkNewPersonalBest]');
-
 		const personalBest = this.props.bestScores.personalBest || Infinity;
 		if (time < personalBest) {
 			this.setState({ newPersonalBest: true });
 			this.props.newPersonalBest(this.props.game.type, time);
-
 			if (this.props.anonymous) {
 				// UPDATE LOCAL STORAGE SCORES
 				if (this.props.storage) {
@@ -120,7 +117,6 @@ class GamePanel extends React.Component {
 					let updatedScores = {};
 					if (scores) {
 						updatedScores = JSON.parse(scores);
-						console.log(updatedScores);
 						updatedScores[this.props.game.type] = time;
 					} else {
 						updatedScores = {
@@ -128,23 +124,17 @@ class GamePanel extends React.Component {
 						};
 					}
 					localStorage.setItem('slidePuzzleScores', JSON.stringify(updatedScores));
-					console.log('[GamePanel.js] personal best saved in localStorage.');
 				}
 			}
 		}
 	};
 
 	checkNewHighscore = (time) => {
-		console.log('[checkNewHighscore]');
-
-		// return null;
-
 		if (!this.props.anonymous) {
 			this.props.newScoreCheckHigscores(this.props.game.type, time);
 		} else {
 			// CHECKING FOR HIGHSCORE ONLY LOCALLY
 			const highscores = this.props.highscores[this.props.game.type];
-			console.log('highscores:', highscores);
 			for (let pos = 0; pos < highscores.length; pos++) {
 				if (time < highscores[pos].score) {
 					this.setState({
@@ -153,7 +143,7 @@ class GamePanel extends React.Component {
 							rank: pos
 						}
 					});
-					console.log('New Highscore found at positin:' + pos);
+					// console.log('New Highscore found at positin:' + pos);
 					return null;
 				}
 			}
@@ -165,7 +155,7 @@ class GamePanel extends React.Component {
 						rank: highscores.length
 					}
 				});
-				console.log('new highscore because of empty rank at position: ' + highscores.length);
+				// console.log('new highscore because of empty rank at position: ' + highscores.length);
 			}
 		}
 	};

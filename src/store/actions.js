@@ -91,71 +91,102 @@ const authCheckTimeout = (expirationTime) => {
 	};
 };
 
-export const auth = (userData, isSignup) => {
-	// userData: email, password, username
-	const user = {
-		username: userData.username,
-		anonymous: false,
-		localId: null,
-		usersId: null,
-		idToken: null,
-		personalBests: undefined
-	};
-	return (dispatch, getState) => {
-		dispatch(authStart());
-		const data = {
-			email: userData.email,
-			password: userData.password,
-			returnSecureToken: true
-		};
-
-		const url = isSignup ? AUTH_URL + 'accounts:signUp?key=' : AUTH_URL + 'accounts:signInWithPassword?key=';
-
+const checkIfUsernameAvailable = name => {
+	return new Promise((resolve, reject) => {
+		const queryParams = `?orderBy="username"&equalTo="${name}"`;
 		axios
-			.post(url + KEY, data)
+			.get('users.json' + queryParams)
 			.then((res) => {
-				user.idToken = res.data.idToken;
-				user.localId = res.data.localId;
-				const expirationDate = new Date(new Date().getTime() + res.data.expiresIn * 1000);
-				try {
-					localStorage.setItem('slidePuzzleIdToken', res.data.idToken);
-					localStorage.setItem('slidePuzzleLocalId', res.data.localId);
-					localStorage.setItem('slidePuzzleExpirationDate', expirationDate);
-				} catch {};
-
-				dispatch(authCheckTimeout(res.data.expiresIn));
-
-				if (isSignup) {
-					// POST username AND CREATE EMPTY personalBests OBJECT
-					const newUser = {
-						id: user.localId,
-						username: userData.username,
-						anonymous: false,
-						personalBests: {}
-					};
-					axios
-						.post('users.json', newUser)
-						.then((res) => {
-							user.username = userData.username;
-							user.personalBests = {};
-							user.usersId = res.data.name;
-							dispatch(authSuccess(user));
-							dispatch(authCloseWindow());
-						})
-						.catch((error) => {
-							dispatch(authFail(error.response.data.error || { message: 'Posting new user data - unknown error' }));
-						});
+				if( Object.keys(res.data).length === 0 ) {
+					resolve();
 				} else {
-					dispatch(authGetUserData(user))
+					reject({ message: 'USERNAME EXIST'});
 				}
 			})
 			.catch((error) => {
-				dispatch(
-					authFail(error.response.data.error || { message: 'Logging in / Signing up - unknown error' })
-				);
-			});
+				reject(error);
+			});	
+	})
+}
+
+export const auth = (userData, isSignup) => {
+	return dispatch => {
+		dispatch(authStart());
+		if (isSignup) {
+			checkIfUsernameAvailable(userData.username)
+				.then( () => {
+					dispatch(authUser(userData, isSignup));
+				})
+				.catch(error => {
+					console.dir(error);
+					dispatch(authFail(error))
+				})
+		} else {
+			dispatch(authUser(userData, isSignup));
+		}
 	};
-};
+}
+
+const authUser = (userData, isSignup) => {
+	return dispatch => {
+		const 
+			user = {
+				username: userData.username,
+				anonymous: false,
+				localId: null,
+				usersId: null,
+				idToken: null,
+				personalBests: undefined
+			},
+			data = {
+				email: userData.email,
+				password: userData.password,
+				returnSecureToken: true
+			},
+			url = isSignup ? AUTH_URL + 'accounts:signUp?key=' : AUTH_URL + 'accounts:signInWithPassword?key=';
+
+		axios
+		.post(url + KEY, data)
+		.then((res) => {
+			user.idToken = res.data.idToken;
+			user.localId = res.data.localId;
+			const expirationDate = new Date(new Date().getTime() + res.data.expiresIn * 1000);
+			try {
+				localStorage.setItem('slidePuzzleIdToken', res.data.idToken);
+				localStorage.setItem('slidePuzzleLocalId', res.data.localId);
+				localStorage.setItem('slidePuzzleExpirationDate', expirationDate);
+			} catch {};
+			dispatch(authCheckTimeout(res.data.expiresIn));
+			if (!isSignup) {
+				dispatch(authGetUserData(user))
+			} else {
+				// POST username AND CREATE EMPTY personalBests OBJECT
+				const newUser = {
+					id: user.localId,
+					username: user.username,
+					anonymous: false,
+					personalBests: {}
+				};
+				axios
+					.post('users.json?auth=' + user.idToken, newUser)
+					.then((res) => {
+						user.personalBests = {};
+						user.usersId = res.data.name;
+						dispatch(authSuccess(user));
+						dispatch(authCloseWindow());
+					})
+					.catch((error) => {
+						dispatch(authFail(error.response.data.error || { message: 'Posting new user data - unknown error' }));
+					});				
+			}
+		})
+		.catch((error) => {
+			dispatch(
+				authFail(error.response.data.error || { message: 'Logging in / Signing up - unknown error' })
+			);
+		});		
+	}
+}
 
 export const authLogout = () => {
 	return (dispatch) => {
@@ -171,11 +202,10 @@ export const authLogout = () => {
 	}
 };
 
-
 const authGetUserData = ( user ) => {
 	return dispatch => {
 		// GET username AND personalBests
-		const queryParams = `?orderBy="id"&equalTo="${user.localId}"`;
+		const queryParams = `?orderBy="id"&equalTo="${user.localId}"&auth=${user.idToken}`;
 		axios
 			.get('users.json' + queryParams)
 			.then((res) => {
@@ -222,11 +252,10 @@ export const authAutoLogin = () => {
 			user: user
 		});		
 		if (idToken && localId && expirationDate) {
-			console.log('expirationDate:' + expirationDate);
+			// console.log('expirationDate:' + expirationDate);
 			if (expirationDate > new Date()) {
-				console.log('Loading user from storage data');
 				const secondsToLogoutLeft = Math.floor((expirationDate - new Date()) / 1000);
-				console.log('seconds to logout left: ' + secondsToLogoutLeft);
+				// console.log('seconds to logout left: ' + secondsToLogoutLeft);
 				dispatch(authCheckTimeout(secondsToLogoutLeft));
 				dispatch(authGetUserData(user))
 			} else {
@@ -236,23 +265,36 @@ export const authAutoLogin = () => {
 	}
 }
 
+const changeUsernameFail = error => {
+	return {
+		type: CHANGE_USERNAME_FAIL,
+		error: error
+	}
+}
+
 export const changeUsername = (newUsername) => {
 	return (dispatch, getState) => {
 		dispatch({ type: CHANGE_USERNAME_START });
-		axios
-			.put(`users/${getState().user.usersId}/username.json`, `"${newUsername}"`)
-			.then((res) => {
-				dispatch({
-					type: CHANGE_USERNAME_SUCCESS,
-					newUsername: newUsername
-				});
+		checkIfUsernameAvailable(newUsername)
+			.then( () => {
+				axios
+				.put(`users/${getState().user.usersId}/username.json?auth=${getState().user.idToken}`, `"${newUsername}"`)
+				.then((res) => {
+					dispatch({
+						type: CHANGE_USERNAME_SUCCESS,
+						newUsername: newUsername
+					});
+				})
+				.catch((error) => {
+					dispatch( changeUsernameFail(
+						error.response ? error.response.data.error : { message: 'Changing username - unknown error' }
+					));
+				});					
 			})
-			.catch((error) => {
-				dispatch({
-					type: CHANGE_USERNAME_FAIL,
-					error: error.response ? error.response.data.error : { message: 'Changing username - unknown error' }
-				});
-			});
+			.catch( (error ) => {
+				console.dir(error);
+				dispatch(changeUsernameFail(error));
+			})
 	};
 };
 
@@ -263,7 +305,6 @@ export const changePassword = (oldpass, newpass) => {
 		axios	// GET EMAIL
 			.post(AUTH_URL + 'accounts:lookup?key=' + KEY, data)
 			.then( res => {
-				console.log(res.data);
 				data = {
 					email: res.data.users[0].email,
 					password: oldpass,
@@ -333,7 +374,6 @@ export const highscoresGet = () => {
 };
 
 export const userGetPersonalBestFromStorage = () => {
-	console.log('[actions.js] userGetPersonalBestFromStorage');
 	return (dispatch) => {
 		dispatch({ type: USER_GET_PERSONAL_BESTS_FROM_STORAGE });
 		let personalBests = {};
@@ -343,9 +383,7 @@ export const userGetPersonalBestFromStorage = () => {
 				personalBests = JSON.parse(scores);
 				dispatch(userSetPersonalBests(personalBests));
 			}
-		} catch (error) {
-			console.log('ERROR');
-		}
+		} catch {}
 	};
 };
 
@@ -366,7 +404,7 @@ export const userNewPersonalBest = (gameType, time) => {
 		if (!getState().user.anonymous) {
 			dispatch({ type: USER_PATCH_PERSONAL_BEST_START });
 			axios
-				.patch(`users/${getState().user.usersId}/personalBests.json`, { [type]: tim })
+				.patch(`users/${getState().user.usersId}/personalBests.json?auth=${getState().user.idToken}`, { [type]: tim })
 				.then((res) => {
 					dispatch({ type: USER_PATCH_PERSONAL_BEST_SUCCESS });
 				})
@@ -396,7 +434,6 @@ export const highscoresNewScoreCheck = (gameType, score) => {
 				updatedHighscores = null;
 
 			if (highscores) {
-				console.log('highscores:', highscores, gameType);
 				for (let pos = 0; pos < highscores.length; pos++) {
 					if (score < highscores[pos].score) {
 						rank = pos;
@@ -424,11 +461,11 @@ export const highscoresNewScoreCheck = (gameType, score) => {
 					}
 				});
 				axios
-					.patch(`highscores.json`, { [gameType]: updatedHighscores })
+					.patch(`highscores.json?auth=${getState().user.idToken}`, { [gameType]: updatedHighscores })
 					.then((res) => {
-						console.log(res.data);
+						// console.log(res.data);
 					});
-				console.log('UPDATED HIGHSCORES: ', updatedHighscores);
+				// console.log('UPDATED HIGHSCORES: ', updatedHighscores);
 			} else {
 				dispatch({ type: 'HIGHSCORES_NEW_SCORE_CHECK_END' });
 			}

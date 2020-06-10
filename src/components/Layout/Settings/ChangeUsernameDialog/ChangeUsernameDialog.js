@@ -77,6 +77,7 @@ class ChangeUsername extends Component {
 		));
 
 		const errorMessage = this.props.error ? <p className="ErrorMessage">{this.props.error.message}</p> : null;
+		const disabled = !this.state.formIsValid || (this.state.controls.username.value === this.props.username);
 
 		let changeUsernameForm = null,
 			spinner = null;
@@ -89,7 +90,7 @@ class ChangeUsername extends Component {
 					{form}
 					{errorMessage}
 					<Button 
-						disabled={!this.state.formIsValid} 
+						disabled={disabled} 
 						callClick={this.onChangeUsernameHandler}
 					>
 						Change User Name
@@ -122,7 +123,8 @@ const mapStateToProps = (state) => {
 	return {
 		error: state.error,
 		loading: state.loadingAuth,
-		actionSuccess: state.actionSuccess
+		actionSuccess: state.actionSuccess,
+		username: state.user.username,
 	};
 };
 

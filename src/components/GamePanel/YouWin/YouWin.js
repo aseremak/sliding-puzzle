@@ -4,7 +4,6 @@ import Button from '../../UI/Button/Button';
 import Spinner from '../../UI/Spinner/Spinner';
 
 const youWin = (props) => {
-  console.log('[YouWin.js] newHighscores:', props.newHighscore);
   
   let infoPersonalBest = [];
   if (props.newPersonalBest) {
