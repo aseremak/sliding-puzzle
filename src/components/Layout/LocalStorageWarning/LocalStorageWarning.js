@@ -1,5 +1,7 @@
 import React from 'react';
 import './LocalStorageWarning.css';
+import LangContext from '../../../hoc/context/LangContext';
+import { txt } from '../../../shared/dict';
 
 const localStorageWarning = (props) => {
 	let browser = 'Chrome';
@@ -20,12 +22,16 @@ const localStorageWarning = (props) => {
 	}
 
 	return (
-		<div className="LocalStorageWarning stdBlockStrong">
-			Web Storage Disabled! Enable this feature to store your best scores!{' '}
-			<a href={'https://www.google.com/search?q=how+enable+web+storage+in+' + browser} target="_new_tab">
-				More info
-			</a>
-		</div>
+		<LangContext.Consumer>
+			{(context) => (
+				<div className="LocalStorageWarning stdBlockStrong">
+					{txt.WEB_STORAGE_WARNING[context.lang]}
+					<a href={'https://www.google.com/search?q=how+enable+web+storage+in+' + browser} target="_new_tab">
+						{txt.HOW_TO_DO[context.lang]}
+					</a>
+				</div>
+			)}
+		</LangContext.Consumer>
 	);
 };
 

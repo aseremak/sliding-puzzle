@@ -11,7 +11,12 @@ import Spinner from '../../../UI/Spinner/Spinner';
 import { updateObject, checkValidity } from '../../../../shared/utility';
 import * as actions from '../../../../store/actions';
 
+import LangContext from '../../../../hoc/context/LangContext';
+import { txt } from '../../../../shared/dict';
+
 class ChangePassword extends Component {
+	static contextType = LangContext;
+
 	state = {
 		formIsValid: false,
 		controls: {
@@ -19,7 +24,7 @@ class ChangePassword extends Component {
 				elementType: 'input',
 				elementConfig: {
 					type: 'password',
-					placeholder: 'Old password'
+					placeholder: txt.CURRENT_PASSWORD[this.context.lang]
 				},
 				validation: {
 					required: true,
@@ -33,7 +38,7 @@ class ChangePassword extends Component {
 				elementType: 'input',
 				elementConfig: {
 					type: 'password',
-					placeholder: 'New password (min 6 chars)'
+					placeholder: txt.NEW_PASSWORD_MIN6[this.context.lang]
 				},
 				validation: {
 					required: true,
@@ -98,11 +103,11 @@ class ChangePassword extends Component {
 		} else {
 			changeUsernameForm = (
 				<div className="ChangePassword stdBlock">
-					<p>Enter old password, new password and click Change Password button</p>
+					<p>{txt.CHANGE_PASSWORD_DIALOG[this.context.lang]}</p>
 					{form}
 					{errorMessage}
 					<Button disabled={!this.state.formIsValid} callClick={this.onChangePasswordHandler}>
-						Change Password
+						{txt.OK[this.context.lang]}
 					</Button>
 				</div>
 			);
@@ -115,14 +120,17 @@ class ChangePassword extends Component {
 			</div>
 		);
 		if (this.props.actionSuccess) {
-			content = <p>Your password was changed successfully.</p>
+			content = <p>{txt.PASSWORD_CHANGED[this.context.lang]}</p>
 		}
+
+		const okCaption = txt.OK[this.context.lang];
+		const cancelCaption = txt.CANCEL[this.context.lang];
 
 		return (
 			<Modal>
 				{content}
 				<br/>
-				<Button callClick={this.props.clickCancelCall}>{this.props.actionSuccess ? 'OK' : 'Cancel'}</Button>
+				<Button callClick={this.props.clickCancelCall}>{this.props.actionSuccess ? okCaption : cancelCaption}</Button>
 			</Modal>
 		);
 	}

@@ -6,16 +6,13 @@ import Auxi from '../../hoc/Auxi/Auxi';
 import GameInfo from '../../components/UserPanel/GameInfo/GameInfo';
 import Button from '../../components/UI/Button/Button';
 
-import localization from '../../localization';
 import LangContext from '../../hoc/context/LangContext';
-
-const txt = new localization();
+import { txt } from '../../shared/dict';
 
 class UserPanel extends React.Component {
   state = {
     selectedGame: null,
   }  
-
   static contextType = LangContext;
 
   listClickedHandler = (game) => {
@@ -46,15 +43,14 @@ class UserPanel extends React.Component {
 		return (
 			<Auxi>
         <div className="GamesList">
-          <br/><p>{txt.SELECT_GAME_AND_CLICK_PLAY[this.context.lang]}</p><br/>
+          <br/><p>{txt.SELECT_GAME_AND_PLAY[this.context.lang]}</p><br/>
           <ul>
             <li className="stdBlockStrong" key="game_list_header">
               <GameInfo 
                 header={true}
-                gameLabel="Game Type" 
-                personalBest="Personal Best" 
-                averagePB="Avg. Personal Best" 
-                highscore="High Score"/>
+                gameLabel={txt.GAME_TYPE[this.context.lang]} 
+                personalBest={txt.PERSONAL_BEST[this.context.lang]} 
+                highscore={txt.HIGHSCORE[this.context.lang]}/>
             </li>
             {games}
           </ul>
@@ -66,7 +62,7 @@ class UserPanel extends React.Component {
         </Button>
         <Button 
           callClick={this.props.callOpenHighscores}
-        >High Scores
+        >{txt.HIGHSCORES[this.context.lang]}
         </Button>        
 			</Auxi>
 		);

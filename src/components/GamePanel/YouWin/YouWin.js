@@ -3,54 +3,63 @@ import './YouWin.css';
 import Button from '../../UI/Button/Button';
 import Spinner from '../../UI/Spinner/Spinner';
 
-const youWin = (props) => {
+import LangContext from '../../../hoc/context/LangContext';
+import { txt } from '../../../shared/dict';
+
+
+
+class YouWin extends React.Component {
+
+  static contextType = LangContext;
   
-  let infoPersonalBest = [];
-  if (props.newPersonalBest) {
-    if (props.anonymous && !props.storage) {
-      infoPersonalBest.push(<p key="p1">Web Storage Disabled. Unable to store your score.</p>)
-    } else {
-      infoPersonalBest.push(<p key="p2">This is your new Personal Best!</p>)
+  render () {
+    let infoPersonalBest = [];
+    if (this.props.newPersonalBest) {
+      if (this.props.anonymous && !this.props.storage) {
+        infoPersonalBest.push(<p key="p1" style={{fontSize: '0.7em'}}>{txt.UNABLE_STORE_PB[this.context.lang]}</p>)
+      } else {
+        infoPersonalBest.push(<p key="p2">{txt.NEW_PB[this.context.lang]}</p>)
+      }
+    };
+  
+    let infoHighscore = null;
+  
+    if (this.props.newHighscore === null) { // waiting for the end of checking highscores
+      infoHighscore = (
+        <>
+          <p style={{fontSize: '0.7em'}}>{txt.SCORE_COMPARING[this.context.lang]}</p>
+          <Spinner vMargin="1%" />
+        </>);
     }
-  };
-
-  let infoHighscore = null;
-
-  if (props.newHighscore === null) { // waiting for the end of checking highscores
-    infoHighscore = (
-      <>
-        <p style={{fontSize: '0.7em'}}>Your score is being compared with The High Score Table...</p>
-        <Spinner vMargin="1%" />
-      </>);
+    else if (this.props.newHighscore) {
+      infoHighscore = [];
+      if (this.props.newHighscore.rank === 0) {
+      infoHighscore.push( this.props.anonymous ? <p key="p3">{txt.SCORE_BETTER[this.context.lang]}</p> : <p key="p4">You've just set a New High Score!!!</p>)
+      } else {
+        infoHighscore.push(<p key="p5">{txt.SCORE_POS1[this.context.lang] + (this.props.newHighscore.rank + 1) + txt.SCORE_POS2[this.context.lang]}</p>);
+      }
+      if (this.props.anonymous) {
+        infoHighscore.push(<p style={{fontSize: '0.7em'}} key="p6">{txt.SCORE_ANONYMOUS[this.context.lang]}</p>)
+      }
+    };
+  
+    if (this.props.loadingHighscoresError) {
+      infoHighscore = <p style={{fontSize: '0.7em'}}>{txt.SCORE_ERROR[this.context.lang]}</p>
+    }
+  
+    return (
+      <div className="YouWin">
+        <h2 className="stdBlockStrong">{txt.CONGRATULATIONS[this.context.lang]}</h2><br/>
+        <p>{txt.YOUR_SCORE[this.context.lang]}<span>{this.props.time}</span></p><br/>
+        {infoPersonalBest}<br/>
+        {infoHighscore}<br/>
+        <Button 
+            callClick={this.props.clickOkButton}
+          >{txt.OK[this.context.lang]}
+        </Button>	 
+      </div>
+    )
   }
-  else if (props.newHighscore) {
-    infoHighscore = [];
-    if (props.newHighscore.rank === 0) {
-      infoHighscore.push( props.anonymous ? <p key="p3">Your score is better than High Score!</p> : <p key="p4">You've just set a New High Score!!!</p>)
-    } else {
-      infoHighscore.push(<p key="p5">Your score is {props.newHighscore.rank + 1} in The High Scores Table.</p>);
-    }
-    if (props.anonymous) {
-      infoHighscore.push(<p style={{fontSize: '0.7em'}} key="p6">(Your score won't be saved into The High Scores Table because you're not logged in)</p>)
-    }
-  };
-
-  if (props.loadingHighscoresError) {
-    infoHighscore = <p style={{fontSize: '0.7em'}}>An unknown error occured during comparing your score with High Scores.</p>
-  }
-
-  return (
-    <div className="YouWin">
-      <h2 className="stdBlockStrong">CONGRATULATIONS!</h2><br/>
-      <p>Your score: <span>{props.time}</span></p><br/>
-      {infoPersonalBest}<br/>
-      {infoHighscore}<br/>
-      <Button 
-          callClick={props.clickOkButton}
-        >OK
-      </Button>	 
-    </div>
-  )
 };
 
-export default youWin;
+export default YouWin;

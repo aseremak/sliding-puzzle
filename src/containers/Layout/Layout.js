@@ -4,6 +4,9 @@ import { connect } from 'react-redux';
 import './Layout.css';
 import * as actions from '../../store/actions';
 
+import LangContext from '../../hoc/context/LangContext';
+import { txt } from '../../shared/dict';
+
 import LanguageSelector from '../../components/Layout/LanguageSelector/LanguageSelector';
 import Settings from '../../components/Layout/Settings/Settings';
 import LocalStorageWarning from '../../components/Layout/LocalStorageWarning/LocalStorageWarning';
@@ -15,7 +18,6 @@ import ConfirmDialog from '../../components/Layout/ConfirmDialog/ConfirmDialog';
 
 
 class Layout extends React.Component {
-
 	state = {
 		width: null,
 		settingsExpanded: false,
@@ -25,13 +27,12 @@ class Layout extends React.Component {
 		showChangePasswordDialog: false,
 		showConfirmDialog: false,
 		callAfterConfirmation: null,
-		// lang: 'en'
 	};
+	static contextType = LangContext;
 
 	updateWidth = () => {
 		// const curWidth = this.myElement.clientWidth;
 		const curWidth = this.myElement.parentNode.parentNode.parentNode.clientWidth; // BODY WIDTH
-
 		if (this.state.width !== curWidth) {
 			this.setState({ width: curWidth });
 			this.props.widthRef(curWidth);
@@ -89,8 +90,6 @@ class Layout extends React.Component {
 
 
 	onClearPersonalBestsHandler = () => {
-		console.log('clear personal best handler');
-		
 		this.setState({ 
 			showConfirmDialog: true,
 			callAfterConfirmation: 'clearPersonalBests',
@@ -155,7 +154,9 @@ class Layout extends React.Component {
 			dialog = <ConfirmDialog 
 				callConfirmYes = {this.onConfirmYesClickHandler}
 				callConfirmNo = {this.onConfirmNoClickHandler}
-				message = {this.state.callAfterConfirmation === 'auth' ? 'The active game will be canceled.' : 'Scores stored in local storage will be deleted.' }
+				message = {this.state.callAfterConfirmation === 'auth' 
+					? txt.GAME_LL_BE_CANCELED[this.context.lang] 
+					: txt.SCORES_LL_BE_DELETED[this.context.lang] }
 				/>
 		} else if (this.state.showChangeUsernameDialog) {
 			dialog = <ChangeUsernameDialog clickCancelCall={this.onDialogCancelClickedHandler}/>
@@ -170,6 +171,8 @@ class Layout extends React.Component {
 
 		const localStorageWarning = !this.props.storage && this.props.user.anonymous ? <LocalStorageWarning/> : null;
 
+		const logInOrOut = this.props.isLoggedIn ? txt.LOGOUT[this.context.lang] : txt.LOGIN[this.context.lang];
+
 		return (
 			<div
 				className="Layout"
@@ -183,7 +186,7 @@ class Layout extends React.Component {
 						<button 
 							className={this.props.isLoggedIn ? null : "Stress"}
 							onClick={this.onLogInOutOrSignInClickHandler}>
-							{this.props.isLoggedIn ? 'Log Out' : 'Log In'}
+							{logInOrOut}
 						</button>
 					</div>
 					<Settings

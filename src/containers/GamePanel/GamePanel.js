@@ -12,14 +12,12 @@ import ImagePreview from '../../components/ImagePreview/ImagePreview';
 import BestScores from '../../components/GamePanel/BestScores/BestScores';
 import YouWin from '../../components/GamePanel/YouWin/YouWin';
 import Button from '../../components/UI/Button/Button';
-import localization from '../../localization';
-import LangContext from '../../hoc/context/LangContext';
-
 import Modal from '../../components/UI/Modal/Modal';
 
-let puzzleArr = [];
+import LangContext from '../../hoc/context/LangContext';
+import { txt } from '../../shared/dict';
 
-const txt = new localization();
+let puzzleArr = [];
 
 class GamePanel extends React.Component {
 	constructor(props) {

@@ -13,10 +13,11 @@ import Spinner from './components/UI/Spinner/Spinner';
 import LangContext from './hoc/context/LangContext';
 
 const AVAILABLE_GAMES = [ '3x3+', '4x4+', '5x5+', '3x3', '4x4', '5x5' ];
+const SET_LANG_AT_START = true;
+
 
 class App extends React.Component {
 	state = {
-		// availableGames: [ '3x3+', '4x4+', '5x5+', '3x3', '4x4', '5x5' ],
 		boardWidth: null, // 240 / 360 / 420
 		game: {
 			type: null, // '3x3+',
@@ -24,7 +25,6 @@ class App extends React.Component {
 			withNumbers: true,
 			highscore: 0 // THIS VALUE EXIST IN highscores TOO, MAY IT SHOULD BE MOVED FROM HERE
 		},
-		// timerStarted: false,
 		image: null,
 		lang: 'en',
 		isStorageEnabled: undefined
@@ -34,6 +34,11 @@ class App extends React.Component {
 		this.getDataFromLocalStorage();
 		this.props.getHighscores();
 		this.props.authAutoLogin();
+		if (SET_LANG_AT_START && navigator.language) {
+			if (['pl-PL', 'pl', 'PL'].indexOf(navigator.language) !== -1) {
+				this.setState({lang: 'pl'})
+			}
+		}
 	}
 
 	getDataFromLocalStorage() {

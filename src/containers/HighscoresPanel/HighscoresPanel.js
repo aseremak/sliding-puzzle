@@ -5,8 +5,12 @@ import './HighscoresPanel.css';
 import HighscoresTable from '../../components/HighscoresPanel/HighscoresTable/HighscoresTable';
 import Button from '../../components/UI/Button/Button';
 
+import LangContext from '../../hoc/context/LangContext';
+import { txt } from '../../shared/dict';
+
 class HighscoresPanel extends Component {
 	state = { withNumbers: true };
+	static contextType = LangContext;
 
 	onNextPageClickHandler = () => {
 		this.setState((prevState) => {
@@ -29,20 +33,22 @@ class HighscoresPanel extends Component {
 						})
 					);
 				}
-
-				const caption = type.endsWith('+') ? type.slice(0, type.length - 1) + ' with numbers' : type;
-
+				const caption = type.endsWith('+') ? type.slice(0, type.length - 1) + txt.WITH_NUMBERS[this.context.lang] : type;
 				return <HighscoresTable key={type} caption={caption} data={data} />;
 			});
 
+			const switchPageButton = this.state.withNumbers
+			? txt.NEXT_PAGE[this.context.lang]
+			: txt.FIRST_PAGE[this.context.lang];
+		
 		return (
 			<div>
 				<div className="TablesContainer">{tables}
 				<div className="ButtonsContainer">
 				<Button callClick={this.onNextPageClickHandler}>
-					{this.state.withNumbers ? 'Next Page' : 'First Page'}
+					{switchPageButton}
 				</Button>
-				<Button callClick={this.props.callClose}>Close</Button>
+		<Button callClick={this.props.callClose}>{txt.CLOSE[this.context.lang]}</Button>
 				</div>				
 
 				</div>

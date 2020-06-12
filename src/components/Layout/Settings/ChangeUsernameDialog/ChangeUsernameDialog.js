@@ -11,7 +11,11 @@ import Spinner from '../../../UI/Spinner/Spinner';
 import { updateObject, checkValidity } from '../../../../shared/utility';
 import * as actions from '../../../../store/actions';
 
+import LangContext from '../../../../hoc/context/LangContext';
+import { txt } from '../../../../shared/dict';
+
 class ChangeUsername extends Component {
+	static contextType = LangContext;
 	state = {
 		formIsValid: false,
 		controls: {
@@ -19,7 +23,7 @@ class ChangeUsername extends Component {
 				elementType: 'input',
 				elementConfig: {
 					type: 'username',
-					placeholder: 'Username (min 3 chars)'
+					placeholder: txt.USERNAME_MIN3[this.context.lang]
 				},
 				validation: {
 					required: true,
@@ -86,14 +90,13 @@ class ChangeUsername extends Component {
 		} else {
 			changeUsernameForm = (
 				<div className="ChangeUsername stdBlock">
-					<p>Enter new User Name</p>
+					<p>{txt.ENTER_NEW_USERNAME[this.context.lang]}</p>
 					{form}
 					{errorMessage}
 					<Button 
 						disabled={disabled} 
 						callClick={this.onChangeUsernameHandler}
-					>
-						Change User Name
+					>{txt.OK[this.context.lang]}
 					</Button>
 				</div>
 			);
@@ -106,14 +109,20 @@ class ChangeUsername extends Component {
 			</div>
 		);
 		if (this.props.actionSuccess) {
-			content = <p>Your username was changed successfully.</p>
+		content = <p>{txt.USERAME_CHANGED[this.context.lang]}</p>
 		}		
+
+		const okCaption = txt.OK[this.context.lang];
+		const cancelCaption = txt.CANCEL[this.context.lang];
 
 		return (
 			<Modal>
 				{content}
 				<br/>
-				<Button callClick={this.props.clickCancelCall}>{this.props.actionSuccess ? 'OK' : 'Cancel'}</Button>
+				<Button
+					callClick={this.props.clickCancelCall}
+					>{this.props.actionSuccess ? okCaption : cancelCaption}
+				</Button>
 			</Modal>
 		);
 	}

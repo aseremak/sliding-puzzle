@@ -11,7 +11,13 @@ import Spinner from '../../components/UI/Spinner/Spinner';
 import { updateObject, checkValidity } from '../../shared/utility';
 import * as actions from '../../store/actions';
 
+import LangContext from '../../hoc/context/LangContext';
+import { txt } from '../../shared/dict';
+
 class Auth extends Component {
+
+	static contextType = LangContext;
+
 	state = {
 		formIsValid: false,
 		isSignup: false,
@@ -21,7 +27,7 @@ class Auth extends Component {
 				elementType: 'input',
 				elementConfig: {
 					type: 'email',
-					placeholder: 'Mail Address'
+					placeholder: txt.MAIL_ADDRESS[this.context.lang]
 				},
 				validation: {
 					required: true,
@@ -35,7 +41,7 @@ class Auth extends Component {
 				elementType: 'input',
 				elementConfig: {
 					type: 'password',
-					placeholder: 'Password (min 6 chars)'
+					placeholder: txt.PASSWORD_MIN6[this.context.lang]
 				},
 				validation: {
 					required: true,
@@ -49,7 +55,7 @@ class Auth extends Component {
 				elementType: 'input',
 				elementConfig: {
 					type: 'username',
-					placeholder: 'Username (min 3 chars)'
+					placeholder: txt.USERNAME_MIN3[this.context.lang]
 				},
 				validation: {
 					required: true,
@@ -74,7 +80,7 @@ class Auth extends Component {
 		let formIsValid = true;
 		for (let controlName in updatedControls) {
 			if (!this.state.isSignup && controlName === 'username') {
-				// SKIP CHECKING VALICATION OF USERNAME WHICH IS INVISIBLE
+				// USERNAME IS INVISIBLE => SKIP CHECKING
 				continue;
 			}
 			if (updatedControls[controlName].valid !== undefined) {
@@ -138,35 +144,32 @@ class Auth extends Component {
 		} else {
 			loginBlock = (
 				<div className="Auth stdBlock">
-					<p>{this.state.isSignup ? 'Sign up' : 'Log in'} using your email and password</p>
+					<p>{this.state.isSignup ?txt.SIGNUP[this.context.lang] : txt.LOGIN[this.context.lang]} {txt.USING_EMAIL_PASSWORD[this.context.lang]}</p>
 					{form}
 					{errorMessage}
 					<Button disabled={!this.state.formIsValid} callClick={this.onLoginOrSignupHandler}>
-						{this.state.isSignup ? 'Sign Up' : 'Log In'}
+						{this.state.isSignup ? txt.SIGNUP[this.context.lang] : txt.LOGIN[this.context.lang]}
 					</Button>
 				</div>
 			);
 			if (!this.state.isSignup) {
 				signupBlock = (
 					<div className="Auth stdBlock">
-						<p>of if you would like to create a new account then click button below</p>
-						<Button callClick={this.onSwitchToSignupClickHandler}>Sign Up</Button>
+						<p>{txt.CREATE_ACCOUNT[this.context.lang]}</p>
+						<Button callClick={this.onSwitchToSignupClickHandler}>{txt.SIGNUP[this.context.lang]}</Button>
 					</div>
 				);
 			}
 		}
 
 		return (
-			<Modal
-				clickCall={() => {
-					console.log('AUTH CLICKED');
-				}}>
+			<Modal>
 				<div>
 					{loginBlock}
 					{signupBlock}
 					{spinner}
 				</div>
-				<Button callClick={this.props.clickCancelCall}>Cancel</Button>
+		<Button callClick={this.props.clickCancelCall}>{txt.CANCEL[this.context.lang]}</Button>
 			</Modal>
 		);
 	}
