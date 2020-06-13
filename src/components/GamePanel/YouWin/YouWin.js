@@ -1,5 +1,6 @@
 import React from 'react';
 import './YouWin.css';
+import starYellow from '../../../assets/images/star128y.png';
 import Button from '../../UI/Button/Button';
 import Spinner from '../../UI/Spinner/Spinner';
 
@@ -16,9 +17,17 @@ class YouWin extends React.Component {
     let infoPersonalBest = [];
     if (this.props.newPersonalBest) {
       if (this.props.anonymous && !this.props.storage) {
-        infoPersonalBest.push(<p key="p1" style={{fontSize: '0.7em'}}>{txt.UNABLE_STORE_PB[this.context.lang]}</p>)
+        infoPersonalBest.push(
+          <p key="p1" style={{fontSize: '0.7em'}}>
+            {txt.UNABLE_STORE_PB[this.context.lang]}<img src={starYellow} alt="gold star" />
+          </p>
+          )
       } else {
-        infoPersonalBest.push(<p key="p2">{txt.NEW_PB[this.context.lang]}</p>)
+        infoPersonalBest.push(
+          <p key="p2">
+            {txt.NEW_PB[this.context.lang]}<img src={starYellow} alt="gold star" />
+          </p>
+        )
       }
     };
   
@@ -34,12 +43,27 @@ class YouWin extends React.Component {
     else if (this.props.newHighscore) {
       infoHighscore = [];
       if (this.props.newHighscore.rank === 0) {
-      infoHighscore.push( this.props.anonymous ? <p key="p3">{txt.SCORE_BETTER[this.context.lang]}</p> : <p key="p4">You've just set a New High Score!!!</p>)
+        infoHighscore.push( 
+            this.props.anonymous
+            ? <p key="p3">
+                {txt.SCORE_BETTER[this.context.lang]}<img src={starYellow} alt="gold star" />
+              </p> 
+            : <p key="p4">
+                {txt.NEW_HIGHSCORE[this.context.lang]}<img src={starYellow} alt="gold star" />
+              </p>
+          )
       } else {
-        infoHighscore.push(<p key="p5">{txt.SCORE_POS1[this.context.lang] + (this.props.newHighscore.rank + 1) + txt.SCORE_POS2[this.context.lang]}</p>);
+        infoHighscore.push(
+          <p key="p5">
+            {txt.SCORE_POS1[this.context.lang] + (this.props.newHighscore.rank + 1) + txt.SCORE_POS2[this.context.lang]}
+            <img src={starYellow} alt="gold star" />
+          </p>
+          );
       }
       if (this.props.anonymous) {
-        infoHighscore.push(<p style={{fontSize: '0.7em'}} key="p6">{txt.SCORE_ANONYMOUS[this.context.lang]}</p>)
+        infoHighscore.push(
+          <p style={{fontSize: '0.7em'}} key="p6">{txt.SCORE_ANONYMOUS[this.context.lang]}</p>
+        )
       }
     };
   
@@ -49,7 +73,11 @@ class YouWin extends React.Component {
   
     return (
       <div className="YouWin">
-        <h2 className="stdBlockStrong">{txt.CONGRATULATIONS[this.context.lang]}</h2><br/>
+        <h2 className="stdBlockStrong">
+          <img key="starPB left" src={starYellow} alt="gold star" />
+          {txt.CONGRATULATIONS[this.context.lang]}
+          <img key="starPB right" src={starYellow} alt="gold star" />          
+        </h2><br/>
         <p>{txt.YOUR_SCORE[this.context.lang]}<span>{this.props.time}</span></p><br/>
         {infoPersonalBest}<br/>
         {infoHighscore}<br/>

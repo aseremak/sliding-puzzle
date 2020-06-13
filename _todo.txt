@@ -1,10 +1,6 @@
 improve saving highscores (there is no action confirming success)
 
-+clear storage when user logs in
-
 after user change name: update username if that user exists in highscores 
-
-highscore tables - highlight current user scores
 
 auth - catching and handling errors
 
@@ -14,11 +10,9 @@ add log at the bottom of app - last actions e.g. Anonumous beat his personal bes
 
 show information when loading highscores failed
 
-+check localization at start and set language 
-
 Cookie information
 
-YouWin: if user set a new highscore - move to HighscoresPanel instead of UserPanel
+
 
 
 

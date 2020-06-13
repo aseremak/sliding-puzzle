@@ -1,5 +1,6 @@
 .Button {
   font-size: 1em;
+  font-weight: bold;
   color: #000;
   padding: 10px;
   margin: 10px 10px 0;
@@ -9,15 +10,16 @@
 }
 
 .Button:hover:not(:disabled) {
-  box-shadow: 2px 2px 15px 0px red;
-  /* background-color: #fcefef; */
-  /* font-weight: bold; */
-  /* text-shadow: 2px 2px 8px red; */
-  /* box-shadow: 1px 1px 15px red; */
+  box-shadow: 2px 2px 15px 0px black;
 }
 
 .Button:focus {
   outline: none;
+}
+
+.Button:active {
+  background-color: yellow;
+  transform: scale(1.1);
 }
 
 .Button:disabled {

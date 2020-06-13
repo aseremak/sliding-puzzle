@@ -41,7 +41,8 @@
 }
 
 .GameInfoSelected {
-	background-color: #ffa3a3;
+	background-color: #ccc;
+	background-image: linear-gradient(to top, white, #bbb, white);
 }
 
 .GameInfo img {

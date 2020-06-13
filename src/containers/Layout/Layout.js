@@ -83,11 +83,11 @@ class Layout extends React.Component {
 			if (this.props.isLoggedIn) {
 				this.props.callAuthLogout();
 			} else {
+				this.props.clearPersonalBestCall(); 
 				this.props.callAuthShowWindow();
 			}
 		}
 	};
-
 
 	onClearPersonalBestsHandler = () => {
 		this.setState({ 
@@ -121,7 +121,6 @@ class Layout extends React.Component {
 			callAfterConfirmation: null,
 		});
 	}
-
 
 	onAuthCancelClickedHandler = (event) => {
 		event.stopPropagation();

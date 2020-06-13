@@ -94,7 +94,7 @@ class App extends React.Component {
 
 	endGameHandler = () => {
 		this.props.getHighscores();
-		this.props.timerStop();
+		// this.props.timerStop();
 		this.props.gamePanelClose();
 	};
 
@@ -137,7 +137,9 @@ class App extends React.Component {
 			case 'highscores':
 				panel = <HighscoresPanel 
 					highscores={this.props.highscores}
+					newHighscore={this.props.newHighscore}
 					callClose = {this.closeHighscoresPanelHandler}
+					username={this.props.user.username}
 					/>
 				break;
 
@@ -178,6 +180,7 @@ const mapStateToProps = (state) => {
 		user: state.user,
 		activePanel: state.activePanel,
 		highscores: state.highscores,
+		newHighscore: state.newHighscore,
 	};
 };
 
@@ -190,7 +193,7 @@ const mapDispatchToProps = (dispatch) => {
 		gamePanelClose: () => dispatch(actions.gamePanelClose()),
 		highscoresPanelOpen: () => dispatch(actions.highscoresPanelOpen()),
 		highscoresPanelClose: () => dispatch(actions.highscoresPanelClose()),
-		timerStop: () => dispatch(actions.timerStop()),
+		// // timerStop: () => dispatch(actions.timerStop()),
 		authAutoLogin: () => dispatch(actions.authAutoLogin()),
 	};
 };

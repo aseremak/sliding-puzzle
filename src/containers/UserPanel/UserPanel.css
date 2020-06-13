@@ -8,14 +8,9 @@
 
 .GamesList ul li {
   color: #000;
-  /* background-color: white;
-  border: 1px solid #ccc;
-	box-shadow: 2px 2px 5px 0px #777;
-	margin: 10px 0 0; */
 	cursor: pointer;
-	/* padding: 10px; */
 }
 
 .GamesList ul li:not(:first-child):hover {
-	box-shadow: 2px 2px 15px 0px red;
+	box-shadow: 2px 2px 15px 0px black;
 }

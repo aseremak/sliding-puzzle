@@ -179,6 +179,10 @@ export const txt = {
 		en: 'This is your new Personal Best!',
 		pl: 'To twój nowy rekord!'
 	},
+	NEW_HIGHSCORE: {
+		en: "You've just beaten The High Score!!!",
+		pl: 'Właśnie pobiłeś Rekord Świata!!!'
+	},	
 	SCORE_COMPARING: {
 		en: 'Your score is being compared with The High Score Table...',
 		pl: 'Twój wynik jest porównywany z Tabelą Rekordów...'
@@ -208,3 +212,5 @@ export const txt = {
 		pl: ''
 	},	
 }
+
+

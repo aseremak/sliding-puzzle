@@ -12,3 +12,9 @@
   font-weight: bold;
   font-size: 1.2em;
 }
+
+.YouWin img {
+	width: 1.4em;
+	height: 1.4em;
+	margin: 0 5px -2px;
+}

@@ -1,9 +1,9 @@
 import React from 'react';
 import './PuzzlePiece.css'
 import gif1x1 from '../../../../assets/images/1x1.gif';
-import image240 from '../../../../assets/images/240Koalas.jpg';
-import image360 from '../../../../assets/images/360Koalas.jpg';
-import image420 from '../../../../assets/images/420Koalas.jpg';
+import image240 from '../../../../assets/images/240Fish.jpg';
+import image360 from '../../../../assets/images/360Fish.jpg';
+import image420 from '../../../../assets/images/420Fish.jpg';
 
 const puzzlePiece = (props) => {
 
@@ -21,6 +21,13 @@ const puzzlePiece = (props) => {
         top: props.position.top + 'px'
     }
 
+    let number = props.withNumber ? props.id : null
+    
+    if (props.animate) {
+        number = null;
+        style.border = 'none';
+    }
+
     return (
         <div
             className="PuzzlePiece"
@@ -28,7 +35,7 @@ const puzzlePiece = (props) => {
             id={'puzzle_'+props.id}
             style={style}>
                 <img src={gif1x1} alt="Puzzle Piece" />
-                &nbsp;{props.withNumber ? props.id : null}
+                &nbsp;{number}
         </div>
     )
 }

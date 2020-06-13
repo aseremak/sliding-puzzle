@@ -93,19 +93,23 @@ const authCheckTimeout = (expirationTime) => {
 
 const checkIfUsernameAvailable = name => {
 	return new Promise((resolve, reject) => {
-		const queryParams = `?orderBy="username"&equalTo="${name}"`;
-		axios
-			.get('users.json' + queryParams)
-			.then((res) => {
-				if( Object.keys(res.data).length === 0 ) {
-					resolve();
-				} else {
-					reject({ message: 'USERNAME EXIST'});
-				}
-			})
-			.catch((error) => {
-				reject(error);
-			});	
+		if (name.toUpperCase() === 'ANONYMOUS') {
+			reject({ message: 'USERNAME NOT ALLOWED'});
+		} else {
+			const queryParams = `?orderBy="username"&equalTo="${name}"`;
+			axios
+				.get('users.json' + queryParams)
+				.then((res) => {
+					if( Object.keys(res.data).length === 0 ) {
+						resolve();
+					} else {
+						reject({ message: 'USERNAME EXIST'});
+					}
+				})
+				.catch((error) => {
+					reject(error);
+				});				
+		}
 	})
 }
 
@@ -456,6 +460,7 @@ export const highscoresNewScoreCheck = (gameType, score) => {
 				dispatch({
 					type: HIGHSCORES_NEW_SCORE_UPDATE,
 					newHighscore: {
+						gameType: gameType,
 						value: score,
 						rank: rank
 					}
@@ -465,7 +470,6 @@ export const highscoresNewScoreCheck = (gameType, score) => {
 					.then((res) => {
 						// console.log(res.data);
 					});
-				// console.log('UPDATED HIGHSCORES: ', updatedHighscores);
 			} else {
 				dispatch({ type: 'HIGHSCORES_NEW_SCORE_CHECK_END' });
 			}

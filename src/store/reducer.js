@@ -3,7 +3,7 @@ import { updateObject } from '../shared/utility';
 
 const initialState = {
 	user: {
-		username: 'anonymous',
+		username: 'Anonymous',
 		anonymous: true,
 		localId: null,
 		usersId: null,
@@ -279,7 +279,7 @@ const highscoresNewScoreCheckError = (state, action) => {
 
 const highscoresNewScoreUpdate = (state, action) => {
 	return updateObject(state, {
-		newHighscore: { ...action.newHighscore }
+		newHighscore: { ...action.newHighscore },
 	});
 };
 
@@ -288,7 +288,10 @@ const gamePanelOpen = (state, action) => {
 };
 
 const gamePanelClose = (state, action) => {
-	return updateObject(state, { activePanel: 'user' });
+	const panel = state.newHighscore ? 'highscores' : 'user'
+	return updateObject(state, 
+		{ activePanel: panel }
+		);
 };
 
 const highscoresPanelOpen = (state, action) => {
@@ -296,7 +299,12 @@ const highscoresPanelOpen = (state, action) => {
 };
 
 const highscoresPanelClose = (state, action) => {
-	return updateObject(state, { activePanel: 'user' });
+	return updateObject(state, 
+		{ 
+			activePanel: 'user',
+			newHighscore: false
+		 }
+		);
 };
 
 

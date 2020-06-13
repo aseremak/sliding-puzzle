@@ -1,5 +1,5 @@
 import React from 'react';
-import image420 from '../../assets/images/420Koalas.jpg';
+import image420 from '../../assets/images/420Fish.jpg';
 import './ImagePreview.css';
 
 const ImagePreview = (props) => {

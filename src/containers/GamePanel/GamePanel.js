@@ -13,10 +13,12 @@ import BestScores from '../../components/GamePanel/BestScores/BestScores';
 import YouWin from '../../components/GamePanel/YouWin/YouWin';
 import Button from '../../components/UI/Button/Button';
 import Modal from '../../components/UI/Modal/Modal';
+import ForceWin from '../../components/GamePanel/ForceWin/ForceWin';
 
 import LangContext from '../../hoc/context/LangContext';
 import { txt } from '../../shared/dict';
 
+const SHOW_FORCE_WIN_COMPONENT = true;
 let puzzleArr = [];
 
 class GamePanel extends React.Component {
@@ -33,9 +35,10 @@ class GamePanel extends React.Component {
 			pieceClicked: undefined,
 			timer: 0,
 			win: false,
+			showAnimation: false,
 			newPersonalBest: false,
 			newHighscoreAnonymous: null, // object {value: number, rank: number} false or null
-													// for YouWin component null means that highscores are being checked
+			// for YouWin component null means that highscores are being checked
 			bestScores: { ...this.props.bestScores } // save initial props.bestScores in order to push then to
 			// BestScores component as constant values
 		};
@@ -59,7 +62,6 @@ class GamePanel extends React.Component {
 		puzzleArr.shuffle();
 		this.setState({
 			positions: puzzleArr.positionsArray()
-			// originalPositions: puzzleArr.originalPositionsArray()
 		});
 	};
 
@@ -77,7 +79,7 @@ class GamePanel extends React.Component {
 
 	componentWillUnmount() {
 		if (this.timer !== null) {
-			clearInterval(this.timer)
+			clearInterval(this.timer);
 		}
 		this.props.timerStop();
 	}
@@ -98,9 +100,22 @@ class GamePanel extends React.Component {
 				this.stopTimer();
 				this.checkNewPersonalBest(this.state.timer);
 				this.checkNewHighscore(this.state.timer);
-				this.setState({ win: true });
+				this.setState({ showAnimation: true });
+				setTimeout( () => {
+					this.setState({ win: true });
+				}, 2500)
 			}
 		}
+	};
+
+	onForceWinClickHandler = (fakeTime) => {
+		this.stopTimer();
+		this.checkNewPersonalBest(fakeTime);
+		this.checkNewHighscore(fakeTime);
+		this.setState({ showAnimation: true });
+		setTimeout( () => {
+			this.setState({ win: true });
+		}, 2590)
 	};
 
 	checkNewPersonalBest = (time) => {
@@ -141,11 +156,10 @@ class GamePanel extends React.Component {
 							rank: pos
 						}
 					});
-					// console.log('New Highscore found at positin:' + pos);
 					return null;
 				}
 			}
-	
+
 			if (highscores.length < 10) {
 				this.setState({
 					newHighscoreAnonymous: {
@@ -153,7 +167,6 @@ class GamePanel extends React.Component {
 						rank: highscores.length
 					}
 				});
-				// console.log('new highscore because of empty rank at position: ' + highscores.length);
 			}
 		}
 	};
@@ -210,12 +223,16 @@ class GamePanel extends React.Component {
 						onPieceClicked={this.handlePieceClicked}
 						originalPositions={this.state.originalPositions}
 						positions={this.state.positions}
+						animate={this.state.showAnimation}
 					/>
 					<ImagePreview width={boardWidth} />
 				</div>
 				{youWin}
 				<Button callClick={this.handleShuffle}>{txt.SHUFFLE_AGAIN[this.context.lang]}</Button>
 				<Button callClick={this.handleResign}>{txt.RESIGN[this.context.lang]}</Button>
+				{SHOW_FORCE_WIN_COMPONENT ? (
+					<ForceWin callClick={(time) => this.onForceWinClickHandler(time)}>Force Win</ForceWin>
+				) : null}
 			</Auxi>
 		);
 	}
@@ -235,7 +252,7 @@ const mapDispatchToProps = (dispatch) => {
 		newPersonalBest: (gameType, time) => dispatch(actions.userNewPersonalBest(gameType, time)),
 		newScoreCheckHigscores: (gameType, score) => dispatch(actions.highscoresNewScoreCheck(gameType, score)),
 		timerStart: () => dispatch(actions.timerStart()),
-		timerStop: () => dispatch(actions.timerStop()),
+		timerStop: () => dispatch(actions.timerStop())
 	};
 };
 
