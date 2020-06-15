@@ -7,6 +7,8 @@
   width: 70%;
   max-width: 250px;
   cursor: pointer;
+	background-color: white;
+	background-image: linear-gradient(to right, #ccc, white, #ccc);  
 }
 
 .Button:hover:not(:disabled) {
@@ -18,7 +20,7 @@
 }
 
 .Button:active {
-  background-color: yellow;
+	background-image: linear-gradient(to right, #ccc, yellow, #ccc);  
   transform: scale(1.1);
 }
 

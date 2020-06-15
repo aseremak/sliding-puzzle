@@ -13,12 +13,10 @@ import BestScores from '../../components/GamePanel/BestScores/BestScores';
 import YouWin from '../../components/GamePanel/YouWin/YouWin';
 import Button from '../../components/UI/Button/Button';
 import Modal from '../../components/UI/Modal/Modal';
-import ForceWin from '../../components/GamePanel/ForceWin/ForceWin';
 
 import LangContext from '../../hoc/context/LangContext';
 import { txt } from '../../shared/dict';
 
-const SHOW_FORCE_WIN_COMPONENT = true;
 let puzzleArr = [];
 
 class GamePanel extends React.Component {
@@ -106,16 +104,6 @@ class GamePanel extends React.Component {
 				}, 2500)
 			}
 		}
-	};
-
-	onForceWinClickHandler = (fakeTime) => {
-		this.stopTimer();
-		this.checkNewPersonalBest(fakeTime);
-		this.checkNewHighscore(fakeTime);
-		this.setState({ showAnimation: true });
-		setTimeout( () => {
-			this.setState({ win: true });
-		}, 2590)
 	};
 
 	checkNewPersonalBest = (time) => {
@@ -230,9 +218,6 @@ class GamePanel extends React.Component {
 				{youWin}
 				<Button callClick={this.handleShuffle}>{txt.SHUFFLE_AGAIN[this.context.lang]}</Button>
 				<Button callClick={this.handleResign}>{txt.RESIGN[this.context.lang]}</Button>
-				{SHOW_FORCE_WIN_COMPONENT ? (
-					<ForceWin callClick={(time) => this.onForceWinClickHandler(time)}>Force Win</ForceWin>
-				) : null}
 			</Auxi>
 		);
 	}

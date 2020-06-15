@@ -8,7 +8,7 @@ const highscoresTable = (props) => {
 		if (props.username === highscore.username) {
 			classes += ' CurrentUser';
 		}
-		const star = props.rowWithStar && index === props.rowWithStar ? <img src={starYellow} alt="gold star" /> : null;
+		const star = props.rowWithStar !== null && index === props.rowWithStar ? <img src={starYellow} alt="gold star" /> : null;
 		return (
       <li key={index} className={classes}>
         <div className="Col1">{index + 1}</div>

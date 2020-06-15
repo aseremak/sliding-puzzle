@@ -436,7 +436,6 @@ export const highscoresNewScoreCheck = (gameType, score) => {
 			let
 				rank = null,
 				updatedHighscores = null;
-
 			if (highscores) {
 				for (let pos = 0; pos < highscores.length; pos++) {
 					if (score < highscores[pos].score) {
@@ -444,11 +443,14 @@ export const highscoresNewScoreCheck = (gameType, score) => {
 						break;
 					}
 				}
-				if (!rank && highscores.length < 10) {
+				if (rank === null && highscores.length < 10) {
 					rank = highscores.length;
 				}
-				if (rank) {
+				if (rank !== null) {
 					updatedHighscores = highscores.slice(0, rank).concat(newHighscore, highscores.slice(rank));
+					if (updatedHighscores.length > 10) {
+						updatedHighscores = updatedHighscores.slice(0, 10);
+					}
 				}
 			} else {
 				// HIGHSCORES ARRAY IS EMPTY

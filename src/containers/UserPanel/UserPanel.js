@@ -28,6 +28,7 @@ class UserPanel extends React.Component {
           className="stdBlock" 
           key={game} 
           onClick={() => this.listClickedHandler(game)}
+          onDoubleClick={() => this.props.clickPlay(game)}
         >
           <GameInfo 
             gameLabel={gameLabel} 

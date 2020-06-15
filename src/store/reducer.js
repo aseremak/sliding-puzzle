@@ -22,7 +22,6 @@ const initialState = {
 	newHighscore: false, // null = STATE OF CHECKING, false = NO HIGH SCORE OR OBJECT {value: number, rank: number}
 	authenticating: false,
 	highscores: null,
-	thunk: null
 };
 
 const AVAILABLE_GAMES = [ '3x3+', '4x4+', '5x5+', '3x3', '4x4', '5x5' ];
