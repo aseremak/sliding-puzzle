@@ -8,9 +8,15 @@ auth - do something with expiration time of session
 
 add log at the bottom of app - last actions e.g. Anonumous beat his personal best, Adamek set a new highscore
 
-show information when loading highscores failed
+Login SignUp form submitted by pressing Enter:
+change input type button to submit
 
-Cookie information
+<button accesskey="b">Important Button</button>
+
+
+
+
+
 
 
 

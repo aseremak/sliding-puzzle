@@ -10,12 +10,12 @@ import { txt } from '../../shared/dict';
 import LanguageSelector from '../../components/Layout/LanguageSelector/LanguageSelector';
 import Settings from '../../components/Layout/Settings/Settings';
 import LocalStorageWarning from '../../components/Layout/LocalStorageWarning/LocalStorageWarning';
+import CookieInformation from '../../components/Layout/CookieInformation/CookieInformation';
 import Modal from '../../components/UI/Modal/Modal';
 import Auth from '../Auth/Auth';
 import ChangeUsernameDialog from '../../components/Layout/Settings/ChangeUsernameDialog/ChangeUsernameDialog';
 import ChangePasswordDialog from '../../components/Layout/Settings/ChangePasswordDialog/ChangePasswordDialog';
 import ConfirmDialog from '../../components/Layout/ConfirmDialog/ConfirmDialog';
-
 
 class Layout extends React.Component {
 	state = {
@@ -27,6 +27,7 @@ class Layout extends React.Component {
 		showChangePasswordDialog: false,
 		showConfirmDialog: false,
 		callAfterConfirmation: null,
+		cookieInformationShown: false
 	};
 	static contextType = LangContext;
 
@@ -44,6 +45,10 @@ class Layout extends React.Component {
 			this.updateWidth();
 		}
 		window.addEventListener('resize', () => this.updateWidth());
+		try {
+			const cookie = localStorage.getItem('slidePuzzleCookie');
+			this.setState({cookieInformationShown: cookie === '1'})
+		} catch {};
 	}
 
 	componentWillUnmount() {
@@ -75,26 +80,26 @@ class Layout extends React.Component {
 	onLogInOutOrSignInClickHandler = (event) => {
 		event.stopPropagation();
 		if (this.props.activePanel === 'game') {
-			this.setState({ 
+			this.setState({
 				showConfirmDialog: true,
-				callAfterConfirmation: 'auth',
-			})
+				callAfterConfirmation: 'auth'
+			});
 		} else {
 			if (this.props.isLoggedIn) {
 				this.props.callAuthLogout();
 			} else {
-				this.props.clearPersonalBestCall(); 
+				this.props.clearPersonalBestCall();
 				this.props.callAuthShowWindow();
 			}
 		}
 	};
 
 	onClearPersonalBestsHandler = () => {
-		this.setState({ 
+		this.setState({
 			showConfirmDialog: true,
-			callAfterConfirmation: 'clearPersonalBests',
-		})
-	}		
+			callAfterConfirmation: 'clearPersonalBests'
+		});
+	};
 
 	onConfirmYesClickHandler = (event) => {
 		event.stopPropagation();
@@ -105,22 +110,22 @@ class Layout extends React.Component {
 				this.props.callAuthShowWindow();
 			}
 		} else {
-			this.props.clearPersonalBestCall(); 
+			this.props.clearPersonalBestCall();
 		}
 
 		this.setState({
 			showConfirmDialog: false,
-			callAfterConfirmation: null,
+			callAfterConfirmation: null
 		});
-	}
+	};
 
 	onConfirmNoClickHandler = (event) => {
 		event.stopPropagation();
 		this.setState({
 			showConfirmDialog: false,
-			callAfterConfirmation: null,
+			callAfterConfirmation: null
 		});
-	}
+	};
 
 	onAuthCancelClickedHandler = (event) => {
 		event.stopPropagation();
@@ -132,43 +137,62 @@ class Layout extends React.Component {
 		this.setState({
 			showChangeUsernameDialog: false,
 			showChangePasswordDialog: false
-		})
+		});
 	};
 
 	onChangeUsernameHandler = () => {
 		this.props.resetErrors();
-		this.setState({showChangeUsernameDialog: true})
-	}
+		this.setState({ showChangeUsernameDialog: true });
+	};
 
 	onChangePasswordHandler = () => {
 		this.props.resetErrors();
-		this.setState({showChangePasswordDialog: true})
+		this.setState({ showChangePasswordDialog: true });
+	};
+
+	onCookieDialogAccepted = () => {
+		try {
+			localStorage.setItem('slidePuzzleCookie', '1')
+		} catch {};
+		this.setState({ cookieInformationShown: true });
 	}
 
 	render() {
 		const auth = this.props.showAuth ? <Auth clickCancelCall={this.onAuthCancelClickedHandler} /> : null;
 
-		let dialog = null;	
+		let dialog = null;
 		if (this.state.showConfirmDialog) {
-			dialog = <ConfirmDialog 
-				callConfirmYes = {this.onConfirmYesClickHandler}
-				callConfirmNo = {this.onConfirmNoClickHandler}
-				message = {this.state.callAfterConfirmation === 'auth' 
-					? txt.GAME_LL_BE_CANCELED[this.context.lang] 
-					: txt.SCORES_LL_BE_DELETED[this.context.lang] }
+			dialog = (
+				<ConfirmDialog
+					callConfirmYes={this.onConfirmYesClickHandler}
+					callConfirmNo={this.onConfirmNoClickHandler}
+					message={
+						this.state.callAfterConfirmation === 'auth' ? (
+							txt.GAME_LL_BE_CANCELED[this.context.lang]
+						) : (
+							txt.SCORES_LL_BE_DELETED[this.context.lang]
+						)
+					}
 				/>
+			);
 		} else if (this.state.showChangeUsernameDialog) {
-			dialog = <ChangeUsernameDialog clickCancelCall={this.onDialogCancelClickedHandler}/>
-		} else if ( this.state.showChangePasswordDialog) {
-			dialog = <ChangePasswordDialog clickCancelCall={this.onDialogCancelClickedHandler}/>
-		} 
+			dialog = <ChangeUsernameDialog clickCancelCall={this.onDialogCancelClickedHandler} />;
+		} else if (this.state.showChangePasswordDialog) {
+			dialog = <ChangePasswordDialog clickCancelCall={this.onDialogCancelClickedHandler} />;
+		}
 
 		let modal = false;
-		if (this.state.showModal) {
+		if (!this.state.cookieInformationShown) {
+			modal = (
+				<Modal>
+					<CookieInformation clickCall={this.onCookieDialogAccepted} />
+				</Modal>
+			);
+		} else if (this.state.showModal) {
 			modal = <Modal clickCall={this.onClickAnywhereHandler} />;
 		}
 
-		const localStorageWarning = !this.props.storage && this.props.user.anonymous ? <LocalStorageWarning/> : null;
+		const localStorageWarning = !this.props.storage && this.props.user.anonymous ? <LocalStorageWarning /> : null;
 
 		const logInOrOut = this.props.isLoggedIn ? txt.LOGOUT[this.context.lang] : txt.LOGIN[this.context.lang];
 
@@ -182,8 +206,8 @@ class Layout extends React.Component {
 				<div className="Header stdBlockStrong">
 					<div className="Username">
 						<span>{this.props.user.username}</span>
-						<button 
-							className={this.props.isLoggedIn ? null : "Stress"}
+						<button
+							className={this.props.isLoggedIn ? null : 'Stress'}
 							onClick={this.onLogInOutOrSignInClickHandler}>
 							{logInOrOut}
 						</button>
@@ -194,7 +218,7 @@ class Layout extends React.Component {
 						clickCall={() => this.settingsClickHandler()}
 						showChangeUsernameDialog={() => this.onChangeUsernameHandler()}
 						showChangePasswordDialog={() => this.onChangePasswordHandler()}
-						clearPersonalBestCall={() => this.onClearPersonalBestsHandler()} 
+						clearPersonalBestCall={() => this.onClearPersonalBestsHandler()}
 					/>
 					<LanguageSelector
 						expanded={this.state.langSelectorExpanded}
@@ -206,7 +230,7 @@ class Layout extends React.Component {
 				{localStorageWarning}
 				{modal}
 				{auth}
-				{dialog}				
+				{dialog}
 			</div>
 		);
 	}
@@ -226,7 +250,7 @@ const mapDispatchToProps = (dispatch) => {
 		callAuthShowWindow: () => dispatch(actions.authOpenWindow()),
 		callAuthCloseWindow: () => dispatch(actions.authCloseWindow()),
 		callAuthLogout: () => dispatch(actions.authLogout()),
-		resetErrors: () => dispatch(actions.resetErrors()),
+		resetErrors: () => dispatch(actions.resetErrors())
 	};
 };
 

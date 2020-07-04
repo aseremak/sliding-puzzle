@@ -163,6 +163,18 @@ export const txt = {
 		en: '(Your score will not be stored because web storage is disabled)',
 		pl: '(Twój wynik nie zostanie zapamiętany ponieważ przechowywanie danych witryn jest wyłączone)'
 	},	
+	COOKIE_TITLE: {
+		en: 'Cookies Information',
+		pl: 'Informacja o Ciasteczkach'
+	},
+	COOKIE1: {
+		en: 'This site stores cookies to analyze traffic.',
+		pl: 'Ta strona przechowuje pliki cookie w celu analizowania ruchu.'
+	},	
+	COOKIE2: {
+		en: 'If you do not agree that cookies are saved on your computer, you should change your web browser settings.',
+		pl: 'Jeżeli nie wyrażasz zgody, aby pliki cookies były zapisywane na Twoim komputerze, powinieneś zmienić ustawienia swojej przeglądarki internetowej.'
+	},
 	HOW_TO_DO: {
 		en: 'How to do it?',
 		pl: 'Jak to zrobić?'
