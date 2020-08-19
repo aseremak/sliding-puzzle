@@ -12,7 +12,8 @@ import Layout from './containers/Layout/Layout';
 import Spinner from './components/UI/Spinner/Spinner';
 import LangContext from './hoc/context/LangContext';
 
-const AVAILABLE_GAMES = [ '3x3+', '4x4+', '5x5+', '3x3', '4x4', '5x5' ];
+import { AVAILABLE_GAMES } from './shared/utility';
+
 const SET_LANG_AT_START = true;
 
 

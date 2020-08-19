@@ -81,8 +81,8 @@
 	.Layout {
 		width: 570px;
 		font-size: 1.0rem;
-    border-radius: 5px;
-    margin-top: 2%;		
+		border-radius: 5px;
+		margin-top: 2%;		
 		margin-bottom: 2%;		
 	}
 	.Username ~ div {
@@ -122,5 +122,11 @@
 		left: 0%;
 		width: 50%;
 		height: 70%;
+	}
+}
+
+@media (max-height: 600px) {
+	.Box {
+		height: 98%;
 	}
 }

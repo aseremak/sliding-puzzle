@@ -1,5 +1,5 @@
 import * as actionTypes from './actions';
-import { updateObject } from '../shared/utility';
+import { updateObject, AVAILABLE_GAMES } from '../shared/utility';
 
 const initialState = {
 	user: {
@@ -23,8 +23,6 @@ const initialState = {
 	authenticating: false,
 	highscores: null,
 };
-
-const AVAILABLE_GAMES = [ '3x3+', '4x4+', '5x5+', '3x3', '4x4', '5x5' ];
 
 const resetErrors = (state, action) => {
 	return updateObject(state, {
@@ -117,6 +115,13 @@ const changeUsernameSuccess = (state, action) => {
 		actionSuccess: true
 	});
 };
+
+const highscoresUpdateUsername = (state, action) => {
+	return updateObject(state, {
+		highscores: action.updatedHighscores
+	});
+};
+
 
 const changeUsernameFail = (state, action) => {
 	return updateObject(state, {
@@ -341,6 +346,8 @@ const reducer = (state = initialState, action) => {
 			return changeUsernameSuccess(state, action);
 		case actionTypes.CHANGE_USERNAME_FAIL:
 			return changeUsernameFail(state, action);
+		case actionTypes.HIGHSCORES_UPDATE_USERNAME:
+			return highscoresUpdateUsername(state, action);
 
 		case actionTypes.CHANGE_PASSWORD_START:
 			return changePasswordStart(state, action);

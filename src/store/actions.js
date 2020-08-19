@@ -1,5 +1,7 @@
 import axios from '../axios';
 
+import { AVAILABLE_GAMES } from '../shared/utility';
+
 const KEY = process.env.REACT_APP_API_KEY;
 
 const AUTH_URL = 'https://identitytoolkit.googleapis.com/v1/';
@@ -29,6 +31,7 @@ export const HIGHSCORES_NEW_SCORE_CHECK_START = 'HIGHSCORES_NEW_SCORE_CHECK_STAR
 export const HIGHSCORES_NEW_SCORE_CHECK_END = 'HIGHSCORES_NEW_SCORE_CHECK_END';
 export const HIGHSCORES_NEW_SCORE_CHECK_ERROR = 'HIGHSCORES_NEW_SCORE_CHECK_ERROR';
 export const HIGHSCORES_NEW_SCORE_UPDATE = 'HIGHSCORES_NEW_SCORE_UPDATE';
+export const HIGHSCORES_UPDATE_USERNAME = 'HIGHSCORES_UPDATE_USERNAME'; 
 
 export const USER_GET_PERSONAL_BESTS_FROM_STORAGE = 'USER_GET_PERSONAL_BESTS_FROM_STORAGE';
 export const USER_SET_PERSONAL_BESTS = 'USER_SET_PERSONAL_BESTS';
@@ -93,7 +96,7 @@ const authCheckTimeout = (expirationTime) => {
 
 const checkIfUsernameAvailable = name => {
 	return new Promise((resolve, reject) => {
-		if (name.toUpperCase() === 'ANONYMOUS') {
+		if (name.toUpperCase() === 'ANONYMOUS' || name === '---') {
 			reject({ message: 'USERNAME NOT ALLOWED'});
 		} else {
 			const queryParams = `?orderBy="username"&equalTo="${name}"`;
@@ -282,7 +285,55 @@ export const changeUsername = (newUsername) => {
 		checkIfUsernameAvailable(newUsername)
 			.then( () => {
 				axios
+				// UPDATE USERNAME IN FIREBASE USERS
 				.put(`users/${getState().user.usersId}/username.json?auth=${getState().user.idToken}`, `"${newUsername}"`)
+				.then((res) => {
+					// UPDATE USERNAME IN state.highscores
+					const oldUsername = getState().user.username,
+						oldHS = getState().highscores,
+						newHS = {};
+					let usernameExistInHS = false;
+					AVAILABLE_GAMES.forEach(gameType => {
+						for(let i=0; i<oldHS[gameType].length; i++){
+							if ( i=== 0) { newHS[gameType] = [] };
+							let username = oldHS[gameType][i].username;
+							if (oldHS[gameType][i].username === oldUsername) {
+								usernameExistInHS = true;
+								username = newUsername;
+							};		
+							newHS[gameType].push({
+								score: oldHS[gameType][i].score,
+								username: username
+							});
+						};
+					});
+					if (usernameExistInHS) {
+						dispatch({
+							type: HIGHSCORES_UPDATE_USERNAME,
+							updatedHighscores: newHS
+						});
+						// UPDATE USERNAME IN FIREBASE HIGHSCORES
+						axios
+						.get('highscores.json')
+						.then((res) => {
+							if (res.data) {
+								const highscores = res.data;
+								Object.keys(highscores).forEach( gameType => {
+									highscores[gameType].forEach( highscore => {
+										if (highscore.username === oldUsername) {
+											highscore.username = newUsername;
+										}
+									});
+								});
+								axios
+								.patch(`highscores.json?auth=${getState().user.idToken}`, highscores)
+								.then((res) => {
+									// console.log('highscores in Firebase updated!', res.data);
+								});
+							};
+						})						
+					};
+				})
 				.then((res) => {
 					dispatch({
 						type: CHANGE_USERNAME_SUCCESS,

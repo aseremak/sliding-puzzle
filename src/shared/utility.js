@@ -1,3 +1,5 @@
+export const AVAILABLE_GAMES = [ '3x3+', '4x4+', '5x5+', '3x3', '4x4', '5x5' ];
+
 export const updateObject = (oldObject, updatedProperties) => {
   return {
     ...oldObject,

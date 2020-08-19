@@ -4,14 +4,13 @@
   min-width: 80px;
   font-size: 1.4em;
   color: black;
+  background-color: white;
+  background-image: linear-gradient(to right, #ccc, white);
   padding: 5px 0;
-  
-  /* font-weight: bold; */
-  
   margin: 10px auto 0; 
+}
 
-  /* background-color: white;
-  border: 1px solid #ccc;
-	box-shadow: 2px 2px 5px 0px #777; */
- 
+.tick {
+  background-color: #ccc;
+  background-image: linear-gradient(to left, #ccc, white);
 }

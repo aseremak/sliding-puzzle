@@ -1,7 +1,5 @@
 improve saving highscores (there is no action confirming success)
 
-after user change name: update username if that user exists in highscores 
-
 auth - catching and handling errors
 
 auth - do something with expiration time of session
