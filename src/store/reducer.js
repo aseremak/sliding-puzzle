@@ -83,7 +83,6 @@ const authLogout = (state, action) => {
 	});
 };
 
-// ***
 
 const authAutoLogin = (state, action) => {
 	if (action.user) {
@@ -109,8 +108,8 @@ const changeUsernameStart = (state, action) => {
 const changeUsernameSuccess = (state, action) => {
 	return updateObject(state, {
 		user: updateObject(state.user, { username: action.newUsername }),
-		// error: true, MOZE BYŁO TO POTRZEBNE???
-		error: false, // MOŻE TAK LEPIEJ?
+		// error: true,
+		error: false, // 
 		loadingAuth: false,
 		actionSuccess: true
 	});
@@ -141,8 +140,8 @@ const changePasswordStart = (state, action) => {
 
 const changePasswordSuccess = (state, action) => {
 	return updateObject(state, {
-		// error: true, MOZE BYŁO TO POTRZEBNE???
-		error: false, // MOŻE TAK LEPIEJ?
+		// error: true, 
+		error: false, // 
 		loadingAuth: false,
 		actionSuccess: true
 	});

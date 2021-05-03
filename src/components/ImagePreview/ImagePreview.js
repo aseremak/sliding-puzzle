@@ -10,7 +10,6 @@ const ImagePreview = (props) => {
   return (
     <div className="ImagePreview" style={styleSize}>
       <img src={image420} style={styleSize} alt="Preview" />
-      {/* <img src={true} alt="" /> */}
     </div>
   )
 };

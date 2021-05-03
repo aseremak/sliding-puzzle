@@ -95,7 +95,6 @@ class App extends React.Component {
 
 	endGameHandler = () => {
 		this.props.getHighscores();
-		// this.props.timerStop();
 		this.props.gamePanelClose();
 	};
 
@@ -145,7 +144,6 @@ class App extends React.Component {
 				break;
 
 			default:
-				// USERPANEL
 				if ((this.props.user.personalBests || !this.state.isStorageEnabled) && this.props.highscores) {
 					panel = (
 						<UserPanel
@@ -194,7 +192,6 @@ const mapDispatchToProps = (dispatch) => {
 		gamePanelClose: () => dispatch(actions.gamePanelClose()),
 		highscoresPanelOpen: () => dispatch(actions.highscoresPanelOpen()),
 		highscoresPanelClose: () => dispatch(actions.highscoresPanelClose()),
-		// // timerStop: () => dispatch(actions.timerStop()),
 		authAutoLogin: () => dispatch(actions.authAutoLogin()),
 	};
 };

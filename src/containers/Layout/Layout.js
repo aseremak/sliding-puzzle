@@ -32,7 +32,6 @@ class Layout extends React.Component {
 	static contextType = LangContext;
 
 	updateWidth = () => {
-		// const curWidth = this.myElement.clientWidth;
 		const curWidth = this.myElement.parentNode.parentNode.parentNode.clientWidth; // BODY WIDTH
 		if (this.state.width !== curWidth) {
 			this.setState({ width: curWidth });
