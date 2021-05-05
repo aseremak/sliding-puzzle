@@ -10,3 +10,11 @@
   color: red;
   padding-top: 8px;
 }
+
+.PasswordForgetLink {
+  color: #ff0000e0;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 5px;
+  padding: 5px;
+}

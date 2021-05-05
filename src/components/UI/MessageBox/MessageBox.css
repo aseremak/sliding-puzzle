@@ -1,0 +1,13 @@
+.MessageBox {
+	position: absolute;
+	display: block;
+	width: 90%;
+	height: 100%;
+	top: 0;
+	left: 5%;
+}
+
+.MessageBoxMessage {
+	height: 70%;
+	padding: 20% 5px;
+}

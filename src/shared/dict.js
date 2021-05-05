@@ -56,8 +56,8 @@ export const txt = {
 		pl: 'Zarejestruj'
 	},
 	USING_EMAIL_PASSWORD: {
-		en: 'using your email and password.',
-		pl: 'się podając email i hasło.'
+		en: ' using your email and password.',
+		pl: ' się podając email i hasło.'
 	},
 	CREATE_ACCOUNT: {
 		en: 'If you want to create a new account, click the button below.',
@@ -219,10 +219,38 @@ export const txt = {
 		en: 'An error occurred while comparing your result with The High Scores Table.',
 		pl: 'Wystąpił błąd podczas porównywania twojego wyniku z Tabelą Rekordów.'
 	},
+	PASS_FORGET: {
+		en: "I don't remember my password",
+		pl: 'Nie pamiętam hasła'
+	},
+	PASS_FORGET_TRY_AGAIN: {
+		en: "I don't want to reset my password, will try again",
+		pl: 'Nie chcę resetować hasła, spróbuje jeszcze raz'
+	},
+	PASS_RESET: {
+		en: 'Reset password',
+		pl: 'Zresetuj hasło'
+	},
+	PASS_RESET_CANCEL: {
+		en: 'Reset password',
+		pl: 'Zresetuj hasło'
+	},
+	PASS_RESET_INSTR: {
+		en: "Enter your email address to send a password reset link",
+		pl: "Podaj email, na który wysłać link do resetowania hasła"
+	},		
+	PASS_RESET_OK: {
+		en: "A link to reset your password has been sent. Check your email.",
+		pl: "Link do resetowania hasła został wysłany. Sprawdź swój e-mail."
+	},	
+	PASS_RESET_FAIL: {
+		en: 'An error occured. ',
+		pl: 'Wystąpił błąd. '
+	},		
 	_: {
 		en: '',
 		pl: ''
-	},	
+	},		
 }
 
 
