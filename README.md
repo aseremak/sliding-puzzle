@@ -1,4 +1,1 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-http://www.sliding-puzzle.adse.pl
-
+Play the game at http://adse.pl/slidingpuzzle/
